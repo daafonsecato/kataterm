@@ -1,0 +1,57 @@
+version: '3'
+services:
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - quizard_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.develop
+    ports:
+      - 80:3000
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./frontend/.env
+    networks:
+      - quizard_network
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.develop
+  #   ports:
+  #     - 8080:8080
+  #     - 7681:7681
+  #     - 8000:8000
+  #   env_file:
+  #     - ./backend/.env
+  #   depends_on:
+  #     - postgres
+  #   volumes:
+  #     - ./backend:/app
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - quizard_network
+
+networks:
+  quizard_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

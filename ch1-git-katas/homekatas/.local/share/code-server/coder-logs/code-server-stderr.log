@@ -1,0 +1,31 @@
+[05:03:28] [152.203.35.101][3b5a57b3][ExtensionHostConnection] Unknown reconnection token (never seen).
+[05:03:28] [152.203.35.101][77020d6e][ManagementConnection] Unknown reconnection token (never seen).
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+[05:12:06] [152.203.35.101][5745c136][ExtensionHostConnection] Unknown reconnection token (never seen).
+[05:12:06] [152.203.35.101][5f4b557b][ManagementConnection] Unknown reconnection token (never seen).
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+[05:16:06] [File Watcher (parcel)] Watcher shutdown because watched path got deleted (path: /home/git-katas-user/exercise)
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+[05:17:54] [File Watcher (parcel)] Watcher shutdown because watched path got deleted (path: /home/git-katas-user/exercise)
+[05:18:14] [File Watcher (parcel)] Watcher restarts because watched path got created again (path: /home/git-katas-user/exercise)
+[05:18:44] [File Watcher (parcel)] Watcher shutdown because watched path got deleted (path: /home/git-katas-user/exercise)
+[05:19:59] [File Watcher (parcel)] Watcher restarts because watched path got created again (path: /home/git-katas-user/exercise)
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+[05:20:17] [File Watcher (parcel)] Watcher shutdown because watched path got deleted (path: /home/git-katas-user/exercise)
+[05:20:36] [File Watcher (parcel)] Watcher restarts because watched path got created again (path: /home/git-katas-user/exercise)
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js
+File not found: /usr/lib/code-server/lib/vscode/out/vsda_bg.wasm
+File not found: /usr/lib/code-server/lib/vscode/out/vsda.js

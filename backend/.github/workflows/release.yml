@@ -1,0 +1,51 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          fetch-depth: 0  # Add this line
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+
+      - name: Tag commit
+        run: git tag v${{ steps.gitversion.outputs.semVer }}
+
+      # - name: Push tag
+      #   run: git push origin v${{ steps.gitversion.outputs.semVer }}
+      # - name: Install goreleaser
+      #   run: |
+      #     wget https://github.com/goreleaser/goreleaser/releases/download/v0.182.1/goreleaser_Linux_x86_64.tar.gz
+      #     tar -xvf goreleaser_Linux_x86_64.tar.gz
+      #     sudo mv goreleaser /usr/local/bin/
+      # - name: Check if there are any tags
+      #   id: check_tags
+      #   run: |
+      #     git tag --points-at HEAD
+      #     git diff -p
+      # - name: Commit changes
+      #   run: |
+      #     git reset --hard HEAD
+      # - name: Install dependencies
+      #   run: go mod download
+      # - name: Run goreleaser
+      #   run: |
+      #     git config --local user.name "GitHub Actions"
+      #     git config --local user.email "actions@github.com"
+      #     goreleaser release --rm-dist --skip-publish

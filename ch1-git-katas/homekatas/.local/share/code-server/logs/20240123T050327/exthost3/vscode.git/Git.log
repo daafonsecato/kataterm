@@ -1,0 +1,24 @@
+2024-01-23 05:07:17.758 [info] Log level: Info
+2024-01-23 05:07:17.758 [info] Validating found git in: "git"
+2024-01-23 05:07:17.758 [info] Using git "2.43.0" from "git"
+2024-01-23 05:07:17.758 [info] > git rev-parse --show-toplevel [3ms]
+2024-01-23 05:07:17.758 [info] > git rev-parse --git-dir --git-common-dir [3ms]
+2024-01-23 05:07:17.758 [info] Open repository: /home/git-katas-user/exercise
+2024-01-23 05:07:17.758 [info] > git rev-parse --show-toplevel [2ms]
+2024-01-23 05:07:17.758 [info] fatal: detected dubious ownership in repository at '/home/git-katas-user/exercise/exercise'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /home/git-katas-user/exercise/exercise
+2024-01-23 05:07:17.758 [info] > git config --get commit.template [11ms]
+2024-01-23 05:07:17.758 [info] No remotes found in the git config file.
+2024-01-23 05:07:17.758 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) refs/heads/master refs/remotes/master [3ms]
+2024-01-23 05:07:17.758 [info] > git status -z -uall [4ms]
+2024-01-23 05:07:17.758 [info] > git config --get commit.template [2ms]
+2024-01-23 05:07:17.764 [info] No remotes found in the git config file.
+2024-01-23 05:07:17.765 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) refs/heads/master refs/remotes/master [2ms]
+2024-01-23 05:07:17.772 [info] > git status -z -uall [2ms]
+2024-01-23 05:07:18.328 [info] > git check-ignore -v -z --stdin [2ms]
+2024-01-23 05:08:41.450 [info] > git config --get commit.template [2ms]
+2024-01-23 05:08:41.456 [info] No remotes found in the git config file.
+2024-01-23 05:08:41.457 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) refs/heads/master refs/remotes/master [2ms]
+2024-01-23 05:08:41.465 [info] > git status -z -uall [2ms]

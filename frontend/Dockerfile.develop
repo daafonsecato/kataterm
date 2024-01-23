@@ -1,0 +1,6 @@
+FROM node:21-alpine
+LABEL maintainer="David Fonseca <8128david@gmail.com>"
+WORKDIR /app
+COPY . .
+RUN npm install
+ENTRYPOINT ["npm","start"]

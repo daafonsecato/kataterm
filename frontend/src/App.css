@@ -1,0 +1,118 @@
+/* App.css */
+.App {
+  display: flex;
+  height: 100vh;
+}
+
+.TopPanel {
+  flex: 1;
+  /* This will allow the panel to expand to fill the space in the flex container */
+  display: flex;
+  /* This makes sure that its children can also be flex items */
+  flex-direction: column;
+  /* Align children vertically */
+  padding: 0;
+  /* Adjust padding as needed, but it might be restricting your height */
+  margin: 0;
+  /* Adjust margin as needed, but it might be restricting your height */
+}
+
+.simple-editor-panel {
+  flex: 1;
+  /* This will allow the editor panel to expand to fill the .TopPanel container */
+  width: 100%;
+  /* Full width of the container */
+  height: 100%;
+  /* This should be auto or 100% depending on whether .TopPanel is flex */
+  border: none;
+  /* Assuming you don't want any border */
+}
+
+
+.gutter {
+  background-color: #e5e7eb;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+  cursor: col-resize;
+}
+
+.gutter.gutter-vertical {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+  cursor: row-resize;
+}
+
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal */
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  max-width: 500px;
+  margin: 0 20px;
+}
+
+/* Modal Content */
+.modal-content h4 {
+  margin-top: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.modal-content p {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Modal Footer */
+.modal-footer {
+  text-align: right;
+  margin-top: 20px;
+}
+
+/* Buttons in the modal */
+.modal-footer button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Specific styles for different buttons */
+.modal-footer .btn-flat {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modal-footer .btn-flat:hover {
+  background-color: #e0e0e0;
+}
+
+/* Confirm button with a distinct color */
+.modal-footer .btn-confirm {
+  background-color: #4CAF50;
+  /* Green */
+  color: white;
+}
+
+.modal-footer .btn-confirm:hover {
+  background-color: #43A047;
+}

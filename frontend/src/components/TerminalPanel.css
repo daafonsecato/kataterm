@@ -1,0 +1,9 @@
+/* SimpleTerminalPanel.css */
+.simple-terminal-panel {
+    width: 100%;
+    /* Full width of the container */
+    height: 100%;
+    /* Full height of the container */
+    border: none;
+    /* No border for the iframe */
+}

@@ -1,0 +1,16 @@
+# Dockerfile for terminalbackend.go
+FROM debian:sid
+
+LABEL maintainer="David Fonseca <8128david@gmail.com>"
+# Install golang, ttyd, curl and supervisord
+RUN apt-get update && apt-get install -y python3-full golang nodejs npm git 
+
+# Copy the Go filesbackend/Dockerfile.develop
+COPY validation /validation
+
+# Copy the start script
+COPY start_validator.sh /start.sh
+
+
+# Use tini as the entry point and run the start script
+ENTRYPOINT ["/bin/bash", "/start.sh"]
