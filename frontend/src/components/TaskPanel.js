@@ -44,10 +44,11 @@ function TaskPanel({ onCheckClick }) {
             if (response.status == 200) {
                 if (data.before_actions.length > 0) {
                     setupQuestion(data)
+                } else {
+                    setIsLoading(false); // Hide loader
                 }
-            } else {
-                setTaskDetails(data);
             }
+            setTaskDetails(data);
         } catch (error) {
             console.error('Error fetching question:', error);
         }
@@ -86,6 +87,7 @@ function TaskPanel({ onCheckClick }) {
             isMountedRef.current = true;
         }
     }, []);
+
     async function checkConfig(questionID) {
         try {
             const response = await fetch('http://terminal.kataterm.com:8000/check_config', {
@@ -101,6 +103,7 @@ function TaskPanel({ onCheckClick }) {
             const status = await response.status;
 
             if (status == 200) {
+                console.log('Answer submitted:', status);
                 fetchTaskDetails();
             }
         } catch (error) {
@@ -121,6 +124,7 @@ function TaskPanel({ onCheckClick }) {
             const status = await response.status;
 
             if (status == 200) {
+                console.log('Answer submitted:', answer);
                 fetchTaskDetails();
             }
         } catch (error) {

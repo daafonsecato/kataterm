@@ -1,0 +1,195 @@
+[
+    {
+        "ID": "1",
+        "Content_Text": "When a file is changed, inside git, the files are not stored with different names",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "True",
+            "False"
+        ],
+        "Answer": "True",
+        "Trials": "2",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "sleep 5; docker exec -u root gitkatas bash -c 'cd /home/git-katas-user; rm exercise; mkdir exercise;';",
+                "shell": true
+            }
+        ]
+    },
+    {
+        "ID": "2",
+        "Content_Text": "`git checkout` pushes changes from git directory to staging area",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "True",
+            "False"
+        ],
+        "Answer": "False",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "3",
+        "Content_Text": "Which git branch strategy is git flow?\n All branches are derived from master and then merge in master\nb) All branches are derived from develop and then merge in master and develop\nc) You have one branch per environment (dev.ga.prod) and master\nd) You have at least two permanent branches: Master and Develop and three types non-permanent: Feature Release Hotfix",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "a)",
+            "b)",
+            "c)",
+            "d)"
+        ],
+        "Answer": "d)",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "4",
+        "Content_Text": "Which git commands are invalid?",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git remove, git retag, git worktree",
+            "git remove, git retag, git amend",
+            "git revert, git retag, git amend",
+            "git amend, git revert, git reset"
+        ],
+        "Answer": "git remove, git retag, git amend",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "5",
+        "Content_Text": "From the initial state to the final state the following commands were necessary",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git merge --no-ff and git rebase",
+            "git rebase",
+            "git merge --ff-only and git rebase",
+            "git merge --squash"
+        ],
+        "Answer": "git merge --ff-only and git rebase",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "6",
+        "Content_Text": "Shows the difference from the last commit",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git diff",
+            "git diff - staged",
+            "git reset",
+            "git diff HEAD ~7"
+        ],
+        "Answer": "git diff",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "7",
+        "Content_Text": "Un-stages files",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git diff -- <filePath>",
+            "git restore <filePath>",
+            "git checkout-- <filePath>",
+            "git rm --cached <filePath>"
+        ],
+        "Answer": "git restore <filePath>",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "8",
+        "Content_Text": "Make specific files go back to how they were at the last commit",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git checkout - <target>",
+            "git reset",
+            "git rm",
+            "git diff"
+        ],
+        "Answer": "git checkout - <target>",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "9",
+        "Content_Text": "Rename actual files from the disk and also in git",
+        "Hint": "Think it carefully",
+        "Subtext": "",
+        "Type_Question": "multiple_choice",
+        "Staging_Message": "Setting things up",
+        "Options": [
+            "git mv",
+            "git pull",
+            "mv",
+            "git reset"
+        ],
+        "Answer": "mv",
+        "Trials": "2",
+        "Before_Actions": [],
+    },
+    {
+        "ID": "10",
+        "Content_Text": "## The task\n\nYou again live in your own branch, this time we will be doing a bit of juggling with branches, to show how lightweight branches are in git.\nHint: `git switch` will make you switch from one branch to another.\n\n1. Use `git branch` to see the two branches that are relevant for this exercise\n2. What branch are you on?\n3. Use `git branch mybranch` to create a new branch called _mybranch_\n4. Use `git branch` again to see the new branch created.\n5. Use `git switch mybranch` to switch to your new branch.\n6. How does the output from `git status` change when you switch between the _master_ and the new branch that you have created?\n7. How does the workspace change when you change between the two branches?\n8. Make sure you are on your _mybranch_ branch before you continue.\n9. Create a file called `file1.txt` with your name.\n10. `Add` the file and `commit` with this change.\n11. Use `git log --oneline --graph` to see your branch pointing to the new commit.\n12. Switch back to the branch called _master_.\n13. Use `git log --oneline --graph` and notice how the commit you made on the _mybranch_ branch is missing on the _master_ branch.\n14. Make a new file called `file2.txt` and commit that file.\n15. Use `git log --oneline --graph --all` to see your branch pointing to the new commit, and that the two branches now have different commits on them.\n16. Switch to your branch _mybranch_.\n17. What happened to your working directory? Can you see your `file2.txt`?\n18. Use `git diff mybranch master` to see the difference between the two branches.\n",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "sleep 5; docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-branching/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator -u root bash -c 'bash /validation/test_basic_branching.sh';"
+    },
+    {
+        "ID": "11",
+        "Content_Text": "## The task\n\nYou live in your own repository. There is a file called `file.txt`.\n\n1. What's the content of `file.txt`?\n2. Overwrite the content in `file.txt`: `echo 2 > file.txt` to change the state of your file in the working directory (or `sc file.txt '2'` in PowerShell)\n3. What does `git diff` tell you?\n4. What does `git diff --staged` tell you? why is this blank?\n5. Run `git add file.txt` to stage your changes from the working directory.\n6. What does `git diff` tell you?\n7. What does `git diff --staged` tell you?\n8. Overwrite the content in `file.txt`: `echo 3 > file.txt` to change the state of your file in the working directory (or `sc file.txt '3'` in PowerShell).\n9. What does `git diff` tell you?\n10. What does `git diff --staged` tell you?\n11. Explain what is happening\n12. Run `git status` and observe that `file.txt` are present twice in the output.\n13. Run `git restore --staged file.txt` to unstage the change\n14. What does `git status` tell you now?\n15. Stage the change and make a commit\n16. What does the log look like?\n17. Overwrite the content in `file.txt`: `echo 4 > file.txt` (or `sc file.txt '4'` in PowerShell)\n18. What is the content of `file.txt`?\n19. What does `git status` tell us?\n20. Run `git restore file.txt`\n21. What is the content of `file.txt`?\n22. What does `git status` tell us?",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "sleep 5; docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-staging/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator -u root bash -c 'bash /validation/test_basic_staging.sh';"
+    }
+]
