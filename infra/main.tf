@@ -87,14 +87,7 @@ resource "aws_security_group" "my_security_group" {
 
   ingress {
     from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 3001
-    to_port     = 3001
+    to_port     = 10000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -117,7 +110,7 @@ resource "aws_eip_association" "my_eip_association" {
 }
 
 resource "aws_instance" "my_ec2_instance" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = "ami-0d617a6646547e912"
   instance_type          = "t2.medium"
   key_name               = "my-key-pair"
   subnet_id              = aws_subnet.my_subnet.id

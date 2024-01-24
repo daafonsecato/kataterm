@@ -3,8 +3,8 @@ FROM debian:sid
 
 LABEL maintainer="David Fonseca <8128david@gmail.com>"
 # Install golang, ttyd, curl and supervisord
-RUN apt-get update && apt-get install -y python3-full golang nodejs npm git 
-
+# RUN apt-get update && apt-get install -y python3-full golang nodejs npm git 
+RUN apt-get update && apt-get install -y git
 # Copy the Go filesbackend/Dockerfile.develop
 COPY validation /validation
 

@@ -45,6 +45,9 @@ func main() {
 	// Rutas para las tareas de validación
 	r.HandleFunc("/check_config", qc.CheckConfig).Methods("POST", "OPTIONS")
 
+	// Rutas para las tareas de seed de la db
+	r.HandleFunc("/dbseed", qc.DBSeed).Methods("POST", "OPTIONS")
+
 	r.Use(corsMiddleware)
 
 	http.ListenAndServe(":8000", r)

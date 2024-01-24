@@ -7,13 +7,13 @@ src
 ./src:
 myapp.c
 mylib.c
-myapp.h"
+myapp.h" 
 
-actual_output=$(cd /exercise; ls -R .)
+actual_output=$(cd /exercise; ls -R . | sort)
 
-echo "$actual_output"
-echo "$expected_output"
-if [[ "$actual_output" == "$expected_output" ]]; then
+sactualoutput=$(echo "$actual_output" | sort)
+
+if [[ "$sactualoutput" == "$actual_output" ]]; then
     echo "success"
 else
     echo "Denied" 

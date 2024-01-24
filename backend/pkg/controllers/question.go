@@ -277,6 +277,7 @@ func (controller *QuestionController) CreateQuestion(w http.ResponseWriter, r *h
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(createdQuestion)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (controller *QuestionController) UpdateQuestion(w http.ResponseWriter, r *http.Request) {
@@ -361,7 +362,7 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 	command_to_test := question.TestSpecFilename
 
 	// Run the validation task by executing the bash script
-	cmd := exec.Command("/bin/bash", command_to_test)
+	cmd := exec.Command("/bin/bash","-c",  command_to_test)
 	output, err := cmd.Output()
 	if err != nil {
 		errorMsg := fmt.Sprintf("Error running task: %v", command_to_test)
@@ -436,4 +437,35 @@ func (controller *QuestionController) StageBeforeActions(w http.ResponseWriter, 
 	} else {
 		http.Error(w, "Output does not contain 'success'", http.StatusBadRequest)
 	}
+}
+
+func (controller *QuestionController) DBSeed(w http.ResponseWriter, r *http.Request) {
+	var questions []Question
+	err := json.NewDecoder(r.Body).Decode(&questions)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	for _, question := range questions {
+		if question.Type_Question == "config_test" {
+			if question.Test_spec_filename == "" {
+				http.Error(w, "test_spec_filename is required", http.StatusBadRequest)
+				return
+			}
+		} else {
+			if question.Options == nil || question.Answer == "" {
+				http.Error(w, "options and answer are required", http.StatusBadRequest)
+				return
+			}
+		}
+
+		_, err := controller.questionStore.CreateQuestion(question.ID, question.Content_Text, question.Hint, question.Subtext, question.Type_Question, question.Staging_Message, question.Options, question.Before_Actions, question.Answer, question.Test_spec_filename, question.Trials)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }
