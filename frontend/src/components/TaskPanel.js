@@ -34,6 +34,7 @@ function TaskPanel({ onCheckClick }) {
         };
     }, [timeLeft]);
 
+
     const fetchTaskDetails = async () => {
         try {
             const response = await fetch('http://terminal.kataterm.com:8000/question');
@@ -49,13 +50,13 @@ function TaskPanel({ onCheckClick }) {
             }
         } catch (error) {
             console.error('Error fetching question:', error);
-        } finally {
-            setIsLoading(false); // Hide loader
         }
     };
+
     async function setupQuestion(data) {
         try {
             setIsLoading(true); // Show loader
+            console.log("is loading");
             const response = await fetch('http://terminal.kataterm.com:8000/stage_before_actions', {
                 method: 'POST',
                 mode: 'cors',
@@ -72,8 +73,11 @@ function TaskPanel({ onCheckClick }) {
             setTaskDetails(data);
         } catch (error) {
             console.error('Error submitting answer:', error);
+        } finally {
+            setIsLoading(false); // Hide loader
         }
     }
+
     const isMountedRef = useRef(false);
 
     useEffect(() => {
@@ -82,7 +86,6 @@ function TaskPanel({ onCheckClick }) {
             isMountedRef.current = true;
         }
     }, []);
-
     async function checkConfig(questionID) {
         try {
             const response = await fetch('http://terminal.kataterm.com:8000/check_config', {
@@ -204,8 +207,6 @@ function TaskPanel({ onCheckClick }) {
             setupQuestion(taskDetails);
         } catch (error) {
             console.error('Error resetting answer:', error);
-        } finally {
-            setIsLoading(false); // Hide loader
         }
     }
 
