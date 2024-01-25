@@ -30,24 +30,44 @@ services:
       - ./frontend/.env
     networks:
       - quizard_network
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile.develop
-  #   ports:
-  #     - 8080:8080
-  #     - 7681:7681
-  #     - 8000:8000
-  #   env_file:
-  #     - ./backend/.env
-  #   depends_on:
-  #     - postgres
-  #   volumes:
-  #     - ./backend:/app
-  #   environment:
-  #     - NODE_ENV=development
-  #   networks:
-  #     - quizard_network
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.develop
+    ports:
+      - 8000:8000
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=development
+    networks:
+      - quizard_network
+    privileged: true  
+  gitkatas:
+    build:
+      context: ./ch1-git-katas
+      dockerfile: Dockerfile.gitkatas
+    ports:
+      - 7681:7681
+      - 8080:8080
+    volumes:
+      - ./ch1-git-katas/exercise:/home/git-katas-user/exercise
+    networks:
+      - quizard_network
+  validator:
+    build:
+      context: ./ch1-git-katas
+      dockerfile: Dockerfile.validator
+    volumes:
+      - ./ch1-git-katas/validator:/validator
+      - ./ch1-git-katas/exercise:/exercise
+    networks:
+      - quizard_network
 
 networks:
   quizard_network:
