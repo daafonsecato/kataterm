@@ -3,7 +3,7 @@ FROM debian:sid
 
 LABEL maintainer="David Fonseca <8128david@gmail.com>"
 # Install golang, ttyd, curl and supervisord
-RUN apt-get update && apt-get install -y ttyd curl git \
+RUN apt-get update && apt-get install -y ttyd curl git vim man\
     && curl -fsSL https://code-server.dev/install.sh | sh 
 
 # Copy the Go filesbackend/Dockerfile.develop

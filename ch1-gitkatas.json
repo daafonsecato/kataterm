@@ -232,7 +232,7 @@
     },
     {
         "ID": "14",
-        "Content_Text": "# Rebase Multiple\n\nIn this exercise, we will see how `merge` and `rebase` differ when our branches (`incremental-change-[merge/rebase]`) has multiple commits ahead of the base branch (`master`).\n\n1. Check out how the tree looks using `git log --oneline --graph --all`.\n2. Switch to branch `incremental-change-merge`.\n3. Use `git diff` to see the differences.\n4. Use `git merge` to incorporate new changes from `master` to `incremental-change-merge`.\n5. Resolve the conflicts and *continue* merge operation.\n6. See how the tree looks like now?\n7. Switch to branch `incremental-change-rebase`. This branch is basically an initial copy of `incremental-change-merge`.\n8. Use `git rebase` to incorporate new changes from `master` to `incremental-change-rebase`.\n9. Resolve the conflicts (multiple times).\n10. See how the tree looks like now?",
+        "Content_Text": "# Rebase Multiple\n\nIn this exercise, we will see how `merge` and `rebase` differ when our branches (`incremental-change-[merge/rebase]`) has multiple commits ahead of the base branch (`master`).\n\n1. Check out how the tree looks using `git log --oneline --graph --all`.\n2. Switch to branch `incremental-change-merge`.\n3. Use `git diff` to see the differences.\n4. Use `git merge` to incorporate new changes from `master` to `incremental-change-merge`.\n5. Resolve the conflicts and *continue* merge operation.\n6. See how the tree looks like now?\n7. Switch to branch `incremental-change-rebase`. This branch is basically an initial copy of `incremental-change-merge`.\n8. Use `git rebase` to incorporate new changes from `master` to `incremental-change-rebase`.\n9. Resolve the conflicts (multiple times).\n10. See how the tree looks like now? What the difference between git rebase and git merge?",
         "Hint": "Refer to the Useful commands",
         "Subtext": "",
         "Type_Question": "config_test",
@@ -247,7 +247,7 @@
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-multiple-commitse.sh';"
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-multiple-commits.sh';"
     },
     {
         "ID": "15",
