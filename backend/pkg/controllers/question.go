@@ -91,7 +91,12 @@ func (controller *QuestionController) CheckMultipleChoice(w http.ResponseWriter,
 
 	// Comparar la respuesta del payload con la respuesta actual
 	if payload.Answer == currentQuestion.Answer {
-		controller.SetCurrentQuestionIndex(controller.currentQuestionIndex + 1)
+		index, err := strconv.Atoi(currentQuestion.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		controller.SetCurrentQuestionIndex(index + 1)
 		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
@@ -375,9 +380,15 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Accepted"))
 
-		controller.SetCurrentQuestionIndex(controller.currentQuestionIndex + 1)
+		index, err := strconv.Atoi(question.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		controller.SetCurrentQuestionIndex(index + 1)
 	} else {
-		http.Error(w, "Output does not contain 'success'", http.StatusBadRequest)
+		errormsg := fmt.Sprintf("Error: %v", string(output))
+		http.Error(w, errormsg, http.StatusBadRequest)
 	}
 }
 

@@ -5,5 +5,16 @@
     height: 100%;
     /* Full height of the container */
     border: none;
+    overflow-y: scroll;
     /* No border for the iframe */
+}
+
+.TaskPanel {
+    overflow-y: scroll;
+}
+
+.error-message-config {
+    background-color: #000;
+    padding: 10px;
+    color: rgb(255, 100, 100);
 }

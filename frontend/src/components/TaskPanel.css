@@ -93,14 +93,14 @@
 }
 
 /* 'Try Later' button specific styles */
-.task-panel-footer button.try-later-button {
+.task-panel-footer button.skip-button {
     background-color: #FFC107;
     /* Amber */
     color: white;
     background-image: linear-gradient(to right, #FFC107 0%, #FFD54F 51%, #FFC107 100%);
 }
 
-.task-panel-footer button.try-later-button:hover {
+.task-panel-footer button.skip-button:hover {
     background-position: right center;
     /* shift the background */
     color: #fff;

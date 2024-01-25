@@ -5,10 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpand, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { marked } from 'marked';
 
-function TaskPanel({ onCheckClick }) {
+function TaskPanel() {
     const [taskDetails, setTaskDetails] = useState('');
     const [timeLeft, setTimeLeft] = useState('59:59');
     const [isLoading, setIsLoading] = useState(false); // Add isLoading state
+    const [isConfigTestError, setIsConfigTestError] = useState(false); // Add isConfigTestError state
+    const [configTestErrorMessage, setConfigTestErrorMessage] = useState(''); // Add congiTestErrorMessage state
     const taskPanelRef = useRef(null);
 
     useEffect(() => {
@@ -103,8 +105,13 @@ function TaskPanel({ onCheckClick }) {
             const status = await response.status;
 
             if (status == 200) {
+                setIsConfigTestError(false);
                 console.log('Answer submitted:', status);
                 fetchTaskDetails();
+            } else {
+                setIsConfigTestError(true);
+                const responseBody = await response.text();
+                setConfigTestErrorMessage(responseBody);
             }
         } catch (error) {
             console.error('Error submitting answer:', error);
@@ -183,6 +190,11 @@ function TaskPanel({ onCheckClick }) {
                             Check
                         </button>
                         <div className="test-list">
+                            {isConfigTestError ? ( // Conditional rendering for loader
+                                <div className="error-message-config">{configTestErrorMessage}</div>
+                            ) : (
+                                <div></div>
+                            )}
                             {jsonData.tests && jsonData.tests.map((test, index) => {
                                 const testStatus = test.user_executed
                                     ? test.status === 'passed'
@@ -255,9 +267,7 @@ function TaskPanel({ onCheckClick }) {
             )}
 
             <div className="task-panel-footer">
-                <button className="check-button" onClick={onCheckClick}>Check</button>
-                <button className="skip-button" onClick={skipQuestion}>Skip</button>
-                <button className="try-later-button">Try Later</button>
+                <button className="skip-button">Skip</button>
             </div>
         </div>
     );

@@ -15,7 +15,7 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "sleep 5; docker exec -u root gitkatas bash -c 'cd /home/git-katas-user; rm exercise; mkdir exercise;';",
+                "command": "sleep 5; docker exec -u root gitkatas bash -c 'cd /home/git-katas-user; rm -rf exercise;';",
                 "shell": true
             }
         ]
@@ -33,7 +33,7 @@
         ],
         "Answer": "False",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "3",
@@ -50,7 +50,7 @@
         ],
         "Answer": "d)",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "4",
@@ -67,7 +67,7 @@
         ],
         "Answer": "git remove, git retag, git amend",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "5",
@@ -84,7 +84,7 @@
         ],
         "Answer": "git merge --ff-only and git rebase",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "6",
@@ -101,7 +101,7 @@
         ],
         "Answer": "git diff",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "7",
@@ -118,7 +118,7 @@
         ],
         "Answer": "git restore <filePath>",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "8",
@@ -135,7 +135,7 @@
         ],
         "Answer": "git checkout - <target>",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "9",
@@ -152,11 +152,11 @@
         ],
         "Answer": "mv",
         "Trials": "2",
-        "Before_Actions": [],
+        "Before_Actions": []
     },
     {
         "ID": "10",
-        "Content_Text": "## The task\n\nYou again live in your own branch, this time we will be doing a bit of juggling with branches, to show how lightweight branches are in git.\nHint: `git switch` will make you switch from one branch to another.\n\n1. Use `git branch` to see the two branches that are relevant for this exercise\n2. What branch are you on?\n3. Use `git branch mybranch` to create a new branch called _mybranch_\n4. Use `git branch` again to see the new branch created.\n5. Use `git switch mybranch` to switch to your new branch.\n6. How does the output from `git status` change when you switch between the _master_ and the new branch that you have created?\n7. How does the workspace change when you change between the two branches?\n8. Make sure you are on your _mybranch_ branch before you continue.\n9. Create a file called `file1.txt` with your name.\n10. `Add` the file and `commit` with this change.\n11. Use `git log --oneline --graph` to see your branch pointing to the new commit.\n12. Switch back to the branch called _master_.\n13. Use `git log --oneline --graph` and notice how the commit you made on the _mybranch_ branch is missing on the _master_ branch.\n14. Make a new file called `file2.txt` and commit that file.\n15. Use `git log --oneline --graph --all` to see your branch pointing to the new commit, and that the two branches now have different commits on them.\n16. Switch to your branch _mybranch_.\n17. What happened to your working directory? Can you see your `file2.txt`?\n18. Use `git diff mybranch master` to see the difference between the two branches.\n",
+        "Content_Text": "## Basic Cleaning\nYou are working on a project that involves generated files.  Say you are compiling C files into object files. Before checking out a new branch you want to start clean\n\n1. Explore the directory with `ls -R`. There is a lot going on.  Code files, temp files, object files,..  Let's clean up!\n2. Just to be safe, do a dry run and execute the clean command with the ` -n` option\n3. Oh noes!  there's a `.c` file that would have been deleted!\n4. Add `src/mylib.c` to the staging area. don't commit it.\n5. Run the clean command with the ` -n` option. Notice that mylib.c will not be deleted. Also notice that the files in the obj directory are not listed\n6. Run the clean command with the ` -n -d ` option.\n7. Looks good! clean the repo ` -f -d `\n\n## Useful commands\n- `git clean -n`\n- `git add`\n- `git clean -n -d`\n- `git clean -f -d`\n",
         "Hint": "Refer to the Useful commands",
         "Subtext": "",
         "Type_Question": "config_test",
@@ -167,15 +167,15 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "sleep 5; docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-branching/setup.sh\";'",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-cleaning/setup.sh\";'",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator -u root bash -c 'bash /validation/test_basic_branching.sh';"
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_cleaning.sh';"
     },
     {
         "ID": "11",
-        "Content_Text": "## The task\n\nYou live in your own repository. There is a file called `file.txt`.\n\n1. What's the content of `file.txt`?\n2. Overwrite the content in `file.txt`: `echo 2 > file.txt` to change the state of your file in the working directory (or `sc file.txt '2'` in PowerShell)\n3. What does `git diff` tell you?\n4. What does `git diff --staged` tell you? why is this blank?\n5. Run `git add file.txt` to stage your changes from the working directory.\n6. What does `git diff` tell you?\n7. What does `git diff --staged` tell you?\n8. Overwrite the content in `file.txt`: `echo 3 > file.txt` to change the state of your file in the working directory (or `sc file.txt '3'` in PowerShell).\n9. What does `git diff` tell you?\n10. What does `git diff --staged` tell you?\n11. Explain what is happening\n12. Run `git status` and observe that `file.txt` are present twice in the output.\n13. Run `git restore --staged file.txt` to unstage the change\n14. What does `git status` tell you now?\n15. Stage the change and make a commit\n16. What does the log look like?\n17. Overwrite the content in `file.txt`: `echo 4 > file.txt` (or `sc file.txt '4'` in PowerShell)\n18. What is the content of `file.txt`?\n19. What does `git status` tell us?\n20. Run `git restore file.txt`\n21. What is the content of `file.txt`?\n22. What does `git status` tell us?",
+        "Content_Text": "## Basic Branching\nYou again live in your own branch, this time we will be doing a bit of juggling with branches, to show how lightweight branches are in git.\nHint: `git switch` will make you switch from one branch to another.\n\n1. Use `git branch` to see the two branches that are relevant for this exercise\n2. What branch are you on?\n3. Use `git branch mybranch` to create a new branch called _mybranch_\n4. Use `git branch` again to see the new branch created.\n5. Use `git switch mybranch` to switch to your new branch.\n6. How does the output from `git status` change when you switch between the _master_ and the new branch that you have created?\n7. How does the workspace change when you change between the two branches?\n8. Make sure you are on your _mybranch_ branch before you continue.\n9. Create a file called `file1.txt` with your name.\n10. `Add` the file and `commit` with this change.\n11. Use `git log --oneline --graph` to see your branch pointing to the new commit.\n12. Switch back to the branch called _master_.\n13. Use `git log --oneline --graph` and notice how the commit you made on the _mybranch_ branch is missing on the _master_ branch.\n14. Make a new file called `file2.txt` and commit that file.\n15. Use `git log --oneline --graph --all` to see your branch pointing to the new commit, and that the two branches now have different commits on them.\n16. Switch to your branch _mybranch_.\n17. What happened to your working directory? Can you see your `file2.txt`?\n18. Use `git diff mybranch master` to see the difference between the two branches.\n",
         "Hint": "Refer to the Useful commands",
         "Subtext": "",
         "Type_Question": "config_test",
@@ -186,10 +186,200 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "sleep 5; docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-staging/setup.sh\";'",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-branching/setup.sh\";'",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator -u root bash -c 'bash /validation/test_basic_staging.sh';"
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_branching.sh';"
+    },
+    {
+        "ID": "12",
+        "Content_Text": "## Basic Staging\n\nYou live in your own repository. There is a file called `file.txt`.\n\n1. What's the content of `file.txt`?\n2. Overwrite the content in `file.txt`: `echo 2 > file.txt` to change the state of your file in the working directory (or `sc file.txt '2'` in PowerShell)\n3. What does `git diff` tell you?\n4. What does `git diff --staged` tell you? why is this blank?\n5. Run `git add file.txt` to stage your changes from the working directory.\n6. What does `git diff` tell you?\n7. What does `git diff --staged` tell you?\n8. Overwrite the content in `file.txt`: `echo 3 > file.txt` to change the state of your file in the working directory (or `sc file.txt '3'` in PowerShell).\n9. What does `git diff` tell you?\n10. What does `git diff --staged` tell you?\n11. Explain what is happening\n12. Run `git status` and observe that `file.txt` are present twice in the output.\n13. Run `git restore --staged file.txt` to unstage the change\n14. What does `git status` tell you now?\n15. Stage the change and make a commit\n16. What does the log look like?\n17. Overwrite the content in `file.txt`: `echo 4 > file.txt` (or `sc file.txt '4'` in PowerShell)\n18. What is the content of `file.txt`?\n19. What does `git status` tell us?\n20. Run `git restore file.txt`\n21. What is the content of `file.txt`?\n22. What does `git status` tell us?",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-staging/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_staging.sh';"
+    },
+    {
+        "ID": "13",
+        "Content_Text": "# Fast-forward Merge\n\nYou again live in your own branch, this time we will be doing a bit of juggling with branches, to show how lightweight branches are in git.\n\n1. Create a (feature)branch called `feature/uppercase` (yes, `feature/uppercase` is a perfectly legal branch name, and a common convention).\n2. Switch to this branch\n3. What is the output of `git status`?\n4. Edit the greeting.txt to contain an uppercase greeting\n5. Add `greeting.txt` files to staging area and commit\n6. What is the output of `git branch`?\n7. What is the output of `git log --oneline --graph --all`\n\n   *Remember: You want to update the master branch so it also has all the changes currently on the feature branch. The command 'git merge [branch name]' takes one branch as argument from which it takes changes. The branch pointed to by HEAD (currently checked out branch) is then updated to also include these changes.*\n\n8. Switch to the `master` branch\n9. Use `cat` to see the contents of the greetings\n10. Diff the branches\n11. Merge the branches\n12. Use `cat` to see the contents of the greetings\n13. Delete the uppercase branch",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/ff-merge/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_ff-merge.sh';"
+    },
+    {
+        "ID": "14",
+        "Content_Text": "# Rebase Multiple\n\nIn this exercise, we will see how `merge` and `rebase` differ when our branches (`incremental-change-[merge/rebase]`) has multiple commits ahead of the base branch (`master`).\n\n1. Check out how the tree looks using `git log --oneline --graph --all`.\n2. Switch to branch `incremental-change-merge`.\n3. Use `git diff` to see the differences.\n4. Use `git merge` to incorporate new changes from `master` to `incremental-change-merge`.\n5. Resolve the conflicts and *continue* merge operation.\n6. See how the tree looks like now?\n7. Switch to branch `incremental-change-rebase`. This branch is basically an initial copy of `incremental-change-merge`.\n8. Use `git rebase` to incorporate new changes from `master` to `incremental-change-rebase`.\n9. Resolve the conflicts (multiple times).\n10. See how the tree looks like now?",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/rebase-multiple-commits/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-multiple-commitse.sh';"
+    },
+    {
+        "ID": "15",
+        "Content_Text": "# Basic Ignore\nWe'll work a bit with the `.gitignore` file in this kata.\nIn this file you can specify both file extensions and folder structures that you do not want Git to track.\nYou can still `git add` files and folder that are ignored in the `.gitignore` file.\n\nWe will also work with `git rm`, which is the Git remove command. `git rm` does just the same as removing a file from your working directory, and then staging that change by issuing a `git add filename` on the file that was just deleted.\nSometimes you add a file by accident that was not meant for Git e.g. binary files, class files etc.\n\nIf you want to signal to Git that a file needs to be removed from git, but still want it in your working directory, then use `git rm --cached` to issue a remove command on the staging area, but not in your working directory.\n\n\n## The task\n\n1. Create a file with the name `foo.s`\n2. What is the output of `git status`?\n3. Create a `.gitignore` file in your working directory containing `*.s`\n4. What is the output of `git status`?\n5. Commit the `.gitignore` file\n6. Commit `file1.txt`\n7. Add `txt` files to `.gitignore` by adding a line in the file containing `*.txt`\n8. What does `git status` tell us?\n9. Change `file1.txt`\n10. What does `git status` tell us? Why was the file tracked even though the `txt` extension is in the ignore file?\n11. Make another text file `file2.txt` in the repository, what does `git status` look like now? Why is it not tracked?\n12. Stage the removal of `file1.txt` with the command `git rm --cached`\n13. What does `git status` say?\n14. Create a new file called `file3.txt` and add the line `!file3.txt` to `.gitignore`. (See _note_ below)\n15. What does `git status` say? Can you think of a use-case for keeping track of a file although the extension is ignored?",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/ignore/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_ignore.sh';"
+    },
+    {
+        "ID": "16",
+        "Content_Text": "# 3-Way Merge\n\nYou again live in your own branch, this time we will be doing a bit of juggling with branches, to show how lightweight branches are in git.\n\n1. Create a branch called greeting and switch to it\n2. Edit the greeting.txt to contain your favorite greeting\n3. Add greeting.txt files to the staging area\n4. Commit\n5. Switch back to the master branch\n6. Create a file README.md with information about this repository\n7. Add the README.md file to staging area and make the commit\n8. What is the output of `git log --oneline --graph --all`?\n9. Diff the branches\n10. Merge the greeting branch into master\n11. What is the output of `git log --oneline --graph --all` now? Observe the extra merge commit created with the message \"Merge branch 'greeting'\".",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/3-way-merge/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_3-way-merge.sh';"
+    },
+    {
+        "ID": "17",
+        "Content_Text": "# Basic Cherry Pick\n\nIn this task we want have two branches, master and feature. We have worked and progressed on both branches seperately. However, there are a few changes on the feature branch that we want to take and add onto the master branch. Without getting the entire changeset from the feature branch.\n\nGit has functionality for this \"take-just-these-changes\" and it is called `cherry-pick`.\nYou tell Git which commits you would like to cherry pick and Git will add those commits onto your branch's commit history.\n\nGit can cherry pick either a single commit or a range of commits from a branch.\n\n\nWe currently have this git history in our exercise repository :\n\n    A - B - C - D         master\n          \\n            E - F - G - H feature\n\nAs you can see the `feature` branch and the `master` branch have progressed with different commits. We want to cherry pick the commits F and G and add them onto the master branch, so that our Git history looks like this:\n\n    A - B - C - D - F - G master\n          \\n            E - F - G - H feature\n\n1. Use `git log --oneline --graph --all` to look at the history\n2. Use `cat` to view the content of `names.txt`. This file is changed in commit F\n3. Use `cat` to view the content of `sentence.txt`. This file is changed in commit G\n4. Use `git cherry-pick <commit_hash_F>` to cherry pick just the F commit onto your branch\n5. Use `git log --oneline` to see the change to the history and that commit F should now be the newest commit on the master branch\n6. Use `cat` to view the content of `names.txt` look how it has now changed!\n7. Use `git reset --hard HEAD^` to delete that cherry picking from the history so that we can now try again and cherry pick a range of commits\n8. Use `git log --oneline --graph` to check the the cherry picked commit is now removed from the branch\n9. We are now essentially back to where we began, now use `git cherry-pick <commit_hash_F>^..<commit_hash_G>` to cherry pick the range of commits from F to G (the two commits). Pay close attention and do not forget the caret `^` symbol after the first commit hash (see the section *Useful Note* below to understand why this is needed)\n10. Use `git log --oneline --graph` to view the history\n11. Use `cat` to view the contents of `names.txt` and `sentence.txt` look how they have changed!\n12. How many commits were added due to the cherry pick?\n\n## Useful Note\n\nWhen using range of commits with the cherry pick command, the first commit hash specified for the oldest (left side of the range) is not actually included in the cherry pick, as in that commit is excluded but all others between and including the newest commit are.\n\nSo to bypass this issue it is useful to use the caret `^` after the first commit hash to tell Git that you want the commit BEFORE this commit, therefore including it in the cherry pick process.\n\nFor example\n\n    git cherry-pick ABCD..EFGH\n\nwould not include the commit ABCD, instead you should add a caret symbol to the end of the ABCD to tell git to include it, like this:\n\n    git cherry-pick ABCD^..EFGH\n\nReference: https://www.tollmanz.com/git-cherry-pick-range/\nReference: https://git-scm.com/docs/git-cherry-pick",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-cherry-pick/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_cherry-pick.sh';"
+    },
+    {
+        "ID": "18",
+        "Content_Text": "# Merge Conflict\n\nIn this kata git cannot figure out how to merge the content added on `merge-conflict-branch1` with the content on `master`.\n\nBoth changes need to be in master when you're done.\n\n1. Use `git merge` to bring the changes from `merge-conflict-branch1` on to `master`.\n2. What does `git status` now report.\n3. Fix the conflict with your favorite editor.\n4. Follow the instructions in `git status` to complete the merge.\n5. What does `git log --oneline --graph` show?",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/merge-conflict/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_merge_conflict.sh';"
+    },
+    {
+        "ID": "19",
+        "Content_Text": "# Git reset\nWe can manipulate the History very much so. We should only ever tinker with our local history. As publicly release commits must expect to be immutable.\n\nWe use reset to unstage change, but we can also do many more different things.\n\n1. How does your working directory look like?\n2. What does your log look like? What does your stage look like?\n3. Try to run `git reset --soft HEAD~1`\n4. What happens to your working directory, your log and your stage?\n5. Run `git reset --mixed HEAD~1`\n6. What happens to your working directory, your log and your stage?\n7. Run `git reset --hard HEAD~1`\n8. What happens to your working directory, your log and your stage?\n9. Now try to use `git revert HEAD~1`\n10. What happens to your working directory, your log and your stage?\n\n## Further explanation\n\nThe following is taken from Recap section of [https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified].\nThe reset command overwrites these three trees in a specific order, stopping when you tell it to:\n1. Move what the branch HEAD points to (stop here if --soft)\n2. Make the stage look like HEAD (stop here unless --hard)\n3. Make the working directory look like the stage",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/reset/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_reset.sh';"
+    },
+    {
+        "ID": "20",
+        "Content_Text": "# Advanced interactive rebase\nYou have worked on a new feature called Hello World.\nThis features ends up being complete with both documentation and unit test, but there are a few problems.\nThe history looks really messy, with lots of small half-finished steps, and there are things included that should never have been there.\n\nYou should fix this such that your `git log` looks great!\n\nTo do this we will use our good friend `git rebase --interactive`\n\nLuckily we have a release tag `v0.0` from just before we started the feature.\n\nAs this is an advanced exercise, there are no specific steps to follow and no single solution.\n\n1. Explore the repo and the history so you know what happened\n2. Use `git rebase --interactive v0.0` to let you edit the \"recipe\" for the entire feature development.\n3. Clean up the history such that it actually makes sense. Try to use as many of the rebase \"features\" (e.g. reword, squash, fixup, drop) as possible. You decide yourself if you want to rewrite the whole thing in one go, or apply a few changes first, then run a new `git rebase --interactive v0.0` to keep cleaning.",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/advanced-rebase-interactive/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-interactive.sh';"
+    },
+    {
+        "ID": "21",
+        "Content_Text": "# Change author\n\nYou finally convinced yourself that you should start with the open source project idea you've cherished for so long.\nBut alas, you realized after the first few commits that you forgot to setup your username and email.\n\nYour workplace is kind enough to let you use your work computer to contribute to open source projects, but this also means that your new git repo used the global config on your machine, i.e. your work name and email.\nOn top of all that you've already pushed the first few commits to your remote repository.\n\nNo worries, you remember something about [setting up configs](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration), [rebasing](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History).\n\nYou also remember that changing the config will only change the `committer` of a commit but not its `author`, so you'll also need to [set](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---authorltauthorgt) or [reset](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---reset-author) the author.\nYou know that you need to rebase all the way from the the [root commit](https://git-scm.com/docs/git-rebase#Documentation/git-rebase.txt---root).\n\nThankfully you just started the project so you can still [force push](https://git-scm.com/docs/git-push#Documentation/git-push.txt--f) without fear of messing up ([The Perils of Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)) someone elses local repo.",
+        "Hint": "Refer to the Useful commands",
+        "Subtext": "",
+        "Type_Question": "config_test",
+        "Staging_Message": "Setting things up",
+        "Options": [],
+        "Answer": "",
+        "Trials": "5",
+        "Before_Actions": [
+            {
+                "type": "command",
+                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/change-author/setup.sh\";'",
+                "shell": true
+            }
+        ],
+        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_change_author.sh';"
     }
 ]
