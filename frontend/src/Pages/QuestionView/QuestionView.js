@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import TaskPanel from './TaskPanel';
-import TerminalPanel from './TerminalPanel';
+import React from 'react';
+import TaskPanel from '../../Components/TaskPanel/TaskPanel';
+import TerminalPanel from '../../Components/TerminalPanel/TerminalPanel';
 import Split from 'react-split';
-import EditorPanel from './EditorPanel';
+import EditorPanel from '../../Components/EditorPanel/EditorPanel';
 
 function QuestionView() {
     const ttydUrl = process.env.REACT_APP_TTYD_SERVER_URL; // Replace with your ttyd URL
