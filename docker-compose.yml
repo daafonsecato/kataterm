@@ -30,6 +30,7 @@ services:
       - ./frontend/.env
     networks:
       - quizard_network
+
   backend:
     build:
       context: ./backend
@@ -48,6 +49,24 @@ services:
     networks:
       - quizard_network
     privileged: true  
+
+  reverseproxy:
+    build:
+      context: ./reverseproxy
+      dockerfile: Dockerfile
+    ports:
+      - 7070:7070
+      - 9090:9090
+    env_file:
+      - ./reverseproxy/.env
+    depends_on:
+      - postgres
+    volumes:
+      - ./reverseproxy:/app
+      - /home/ubuntu/.aws/credentials:/root/.aws/credentials
+    networks:
+      - quizard_network
+
   gitkatas:
     build:
       context: ./ch1-git-katas
@@ -59,12 +78,13 @@ services:
       - ./ch1-git-katas/exercise:/home/git-katas-user/exercise
     networks:
       - quizard_network
+
   validator:
     build:
       context: ./ch1-git-katas
       dockerfile: Dockerfile.validator
     volumes:
-      - ./ch1-git-katas/validator:/validator
+      - ./ch1-git-katas/validation:/validation
       - ./ch1-git-katas/exercise:/exercise
     networks:
       - quizard_network
@@ -75,3 +95,4 @@ networks:
 
 volumes:
   postgres_data:
+

@@ -1,0 +1,55 @@
+# Traefik Global Configuration
+log:
+  level: DEBUG  # Set log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+api:
+  dashboard: true
+  insecure: true  # Enable Dashboard without TLS for demonstration purposes
+
+# Entry Points Definition
+entryPoints:
+  web:
+    address: ":80"  # HTTP entry point
+  websecure:
+    address: ":443"  # HTTPS entry point
+
+# Docker Configuration
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: quizard_network  # Same network as specified in docker-compose
+
+# Add HTTP to HTTPS Redirection
+http:
+  routers:
+    http-catchall:
+      rule: "HostRegexp(`{host:.+}`)"
+      entryPoints:
+      - web
+      middlewares:
+      - redirect-to-https
+      service: dummy
+  services:
+    dummy:
+      loadBalancer:
+        servers:
+        - url: "http://127.0.0.1"
+
+# Middleware Definitions
+middlewares:
+  redirect-to-https:
+    redirectScheme:
+      scheme: https
+      permanent: true
+
+# TLS (SSL) Configuration - Optional
+# tls:
+#   certificates:
+#   - certFile: /path/to/cert.crt
+#     keyFile: /path/to/cert.key
+#   stores:
+#     default:
+#       defaultCertificate:
+#         certFile: /path/to/default.crt
+#         keyFile: /path/to/default.key

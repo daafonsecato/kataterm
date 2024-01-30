@@ -20,7 +20,7 @@ var db *sql.DB
 
 func InitDB() (*sql.DB, error) {
 	host = os.Getenv("DB_HOST")
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable ",
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	var err error

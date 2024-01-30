@@ -1,0 +1,109 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/kataterm/traefik.yml:/traefik.yml
+    networks:
+      - quizard_network
+
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - quizard_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.develop
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.terminal.kataterm.com`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./frontend/.env
+    networks:
+      - quizard_network
+
+  docker:
+    image: docker:dind
+    privileged: true
+    volumes:
+      - dind-storage:/var/lib/docker
+      - certs:/certs
+    labels:
+      - "traefik.enable=true"
+      # Route for ttyd
+      - "traefik.http.routers.ttyd.rule=Host(`ttyd.terminal.kataterm.com`)"
+      - "traefik.http.routers.ttyd.service=ttyd"
+      - "traefik.http.routers.ttyd.entrypoints=web"
+      - "traefik.http.services.ttyd.loadbalancer.server.port=7681"
+      # Route for code-server
+      - "traefik.http.routers.code-server.rule=Host(`code-server.terminal.kataterm.com`)"
+      - "traefik.http.routers.code-server.service=code-server"
+      - "traefik.http.routers.code-server.entrypoints=web"
+      - "traefik.http.services.code-server.loadbalancer.server.port=9090"
+    networks:
+      - quizard_network
+
+
+  backend:
+    image: daafonsecato/kataterm-backend:v1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.terminal.kataterm.com`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+      - docker
+    volumes:
+      - ./backend:/app
+      - dind-storage:/var/lib/docker
+      - certs:/certs
+    environment:
+      - NODE_ENV=development
+      # Set the DOCKER_HOST to use the DinD service
+      - DOCKER_TLS_VERIFY=1
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_HOST=tcp://docker:2376
+    networks:
+      - quizard_network
+    
+networks:
+  quizard_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  dind-storage:
+  certs:

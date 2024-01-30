@@ -2,24 +2,29 @@
 FROM ubuntu:latest
 
 LABEL maintainer="David Fonseca <cosmtrek@gmail.com>"
-# Install golang, ttyd, curl and supervisord
-RUN apt-get update && apt-get install -y golang ttyd curl supervisor \
 
+# Install necessary packages
+RUN apt-get update && apt-get install -y golang ttyd curl supervisor \
     && curl -fsSL https://code-server.dev/install.sh | sh
-RUN apt-get update && apt-get install -y \
+
+# Install Docker dependencies
+RUN apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
     gnupg-agent \
     software-properties-common
 
+# Add Docker’s official GPG key
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 
+# Set up the Docker repository
 RUN add-apt-repository \
     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
     $(lsb_release -cs) \
     stable"
 
+# Install Docker CLI and Docker Engine
 RUN apt-get update && apt-get install -y docker-ce-cli
 
 # Set the working directory
@@ -32,14 +37,17 @@ COPY . .
 RUN go mod download
 RUN go get -v github.com/gofiber/fiber
 RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b /usr/local/bin
-# Expose the necessary port
-EXPOSE 8080
+
+# Expose the necessary ports
+EXPOSE 9090
 EXPOSE 8000
 EXPOSE 7681
-# Set the entry point to use Air
 
 # Copy the start script
 COPY start.sh /start.sh
+
+# Set permissions for the start script
+RUN chmod +x /start.sh
 
 # Use tini as the entry point and run the start script
 ENTRYPOINT ["/bin/bash", "/start.sh"]
