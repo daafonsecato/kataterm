@@ -12,7 +12,7 @@ func main() {
 	r := mux.NewRouter()
 
 	qc := controllers.NewQuestionController()
-	qc.SetCurrentQuestionIndex(1)
+	qc.InitializeController()
 
 	// Enable CORS
 	corsMiddleware := func(next http.Handler) http.Handler {
@@ -39,6 +39,8 @@ func main() {
 	r.HandleFunc("/questions/{id}", qc.UpdateQuestion).Methods("PUT")
 	r.HandleFunc("/questions/{id}", qc.DeleteQuestion).Methods("DELETE")
 	r.HandleFunc("/question", qc.GetCurrentQuestion).Methods("GET")
+	r.HandleFunc("/get_score", qc.GetScore).Methods("GET")
+	r.HandleFunc("/skip_question", qc.SkipQuestion).Methods("GET")
 	r.HandleFunc("/submit_answer", qc.CheckMultipleChoice).Methods("POST", "OPTIONS")
 	r.HandleFunc("/stage_before_actions", qc.StageBeforeActions).Methods("POST", "OPTIONS")
 

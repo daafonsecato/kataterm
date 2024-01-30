@@ -12,6 +12,7 @@ function TaskPanel() {
     const [isConfigTestError, setIsConfigTestError] = useState(false); // Add isConfigTestError state
     const [configTestErrorMessage, setConfigTestErrorMessage] = useState(''); // Add congiTestErrorMessage state
     const taskPanelRef = useRef(null);
+    const [trialsLeft, setTrialsLeft] = useState(0);
 
     useEffect(() => {
         const timerInterval = setInterval(() => {
@@ -36,6 +37,9 @@ function TaskPanel() {
         };
     }, [timeLeft]);
 
+    useEffect(() => {
+        setTrialsLeft(taskDetails ? taskDetails.trials_left : 0);
+    }, [taskDetails]);
 
     const fetchTaskDetails = async () => {
         try {
@@ -45,17 +49,29 @@ function TaskPanel() {
             console.log(data);
             if (response.status == 200) {
                 if (data.before_actions.length > 0) {
-                    setupQuestion(data)
+                    setupQuestion(data);
                 } else {
                     setIsLoading(false); // Hide loader
                 }
             }
             setTaskDetails(data);
+            setTrialsLeft(data.trials_left);
         } catch (error) {
             console.error('Error fetching question:', error);
         }
     };
 
+    const skipQuestion = async (event) => {
+        try {
+            const response = await fetch('http://terminal.kataterm.com:8000/skip_question', {
+                method: 'GET',
+            });
+            const data = await response.json();
+            console.log('Answer submitted:', data);
+        } catch (error) {
+            console.error('Error submitting answer:', error);
+        }
+    }
     async function setupQuestion(data) {
         try {
             setIsLoading(true); // Show loader
@@ -109,6 +125,12 @@ function TaskPanel() {
                 console.log('Answer submitted:', status);
                 fetchTaskDetails();
             } else {
+                if (trialsLeft <= 1) {
+                    skipQuestion();
+                    fetchTaskDetails();
+                } else {
+                    setTrialsLeft(trialsLeft - 1);
+                }
                 setIsConfigTestError(true);
                 const responseBody = await response.text();
                 setConfigTestErrorMessage(responseBody);
@@ -133,6 +155,13 @@ function TaskPanel() {
             if (status == 200) {
                 console.log('Answer submitted:', answer);
                 fetchTaskDetails();
+            } else {
+                if (trialsLeft <= 1) {
+                    skipQuestion();
+                    fetchTaskDetails();
+                } else {
+                    setTrialsLeft(trialsLeft - 1);
+                }
             }
         } catch (error) {
             console.error('Error submitting answer:', error);
@@ -147,6 +176,9 @@ function TaskPanel() {
                         <div className="progress-bar" style={{ display: 'none' }}></div>
                         <div className="question-numbers">
                             {jsonData.current_question_number}/{jsonData.total_questions}
+                        </div>
+                        <div className="trials-left">
+                            {trialsLeft} {trialsLeft > 1 ? 'trials' : 'trial'} left
                         </div>
                     </div>
                     <div className="main-content">
@@ -179,6 +211,9 @@ function TaskPanel() {
                         <div className="progress-bar" style={{ display: 'none' }}></div>
                         <div className="question-numbers">
                             {jsonData.current_question_number}/{jsonData.total_questions}
+                        </div>
+                        <div className="trials-left">
+                            {trialsLeft} {trialsLeft > 1 ? 'trials' : 'trial'} left
                         </div>
                     </div>
                     <div className="main-content">
@@ -236,17 +271,6 @@ function TaskPanel() {
         }
     };
 
-    const skipQuestion = async (event) => {
-        try {
-            const response = await fetch('http://terminal.kataterm.com:8000/skip_question', {
-                method: 'GET',
-            });
-            const data = await response.json();
-            console.log('Answer submitted:', data);
-        } catch (error) {
-            console.error('Error submitting answer:', error);
-        }
-    }
 
     return (
         <div className="TaskPanel" ref={taskPanelRef} onClick={handlePanelClick}>

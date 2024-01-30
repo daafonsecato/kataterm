@@ -4,8 +4,7 @@ FROM ubuntu:latest
 LABEL maintainer="David Fonseca <cosmtrek@gmail.com>"
 
 # Install necessary packages
-RUN apt-get update && apt-get install -y golang ttyd curl supervisor \
-    && curl -fsSL https://code-server.dev/install.sh | sh
+RUN apt-get update && apt-get install -y golang curl
 
 # Install Docker dependencies
 RUN apt-get install -y \
@@ -18,7 +17,7 @@ RUN apt-get install -y \
 # Add Docker’s official GPG key
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 
-# Set up the Docker repository
+# Set up the Docker repositorydocker 
 RUN add-apt-repository \
     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
     $(lsb_release -cs) \
@@ -35,7 +34,6 @@ COPY . .
 
 # Install Air for live reloading
 RUN go mod download
-RUN go get -v github.com/gofiber/fiber
 RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b /usr/local/bin
 
 # Expose the necessary ports

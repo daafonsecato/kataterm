@@ -33,10 +33,15 @@ type QuestionStore struct {
 }
 
 type QuestionController struct {
-	questionStore        *models.QuestionStore
-	currentQuestionIndex int
-	totalQuestions       int
-	questionStatuses     []string
+	questionStore           *models.QuestionStore
+	currentQuestionIndex    int
+	totalQuestions          int
+	questionStatuses        []string
+	questionTrials          []int
+	questionTypes           []string
+	completedQuestionTrials []int
+	questionTrialsLeft      []int
+	lastQuestionSentIndex   int
 }
 
 func NewQuestionController() *QuestionController {
@@ -53,6 +58,32 @@ func NewQuestionController() *QuestionController {
 		totalQuestions:       0,
 		questionStatuses:     []string{},
 	}
+}
+func (controller *QuestionController) InitializeController() {
+	questions, err := controller.questionStore.GetQuestions()
+	if err != nil {
+		panic(err)
+	}
+	controller.SetCurrentQuestionIndex(1)
+	controller.lastQuestionSentIndex = 0
+	controller.totalQuestions = len(questions)
+	controller.questionStatuses = make([]string, controller.totalQuestions)
+	controller.questionTrials = make([]int, controller.totalQuestions)
+	controller.questionTypes = make([]string, controller.totalQuestions)
+	controller.completedQuestionTrials = make([]int, controller.totalQuestions)
+	controller.questionTrialsLeft = make([]int, controller.totalQuestions)
+
+	for i, question := range questions {
+		controller.questionTypes[i] = question.TypeQuestion
+		trials, err := strconv.Atoi(question.Trials)
+		if err != nil {
+			panic(err)
+		}
+		controller.questionTrialsLeft[i] = trials
+		controller.questionTrials[i] = trials
+	}
+
+	controller.SetCurrentQuestionIndex(1)
 }
 
 func (controller *QuestionController) GetQuestions(w http.ResponseWriter, r *http.Request) {
@@ -96,9 +127,12 @@ func (controller *QuestionController) CheckMultipleChoice(w http.ResponseWriter,
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1]
+		controller.completedQuestionTrials[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.SetCurrentQuestionIndex(index + 1)
 		w.WriteHeader(http.StatusOK)
 	} else {
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1] - 1
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
@@ -111,6 +145,17 @@ func (controller *QuestionController) GetCurrentQuestion(w http.ResponseWriter, 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	trials, err := strconv.Atoi(question.Trials)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if controller.lastQuestionSentIndex == controller.currentQuestionIndex-1 {
+		controller.questionTrialsLeft[controller.currentQuestionIndex] = trials
+	} else {
+		controller.questionTrialsLeft[controller.currentQuestionIndex] = trials - 1
+	}
+	controller.lastQuestionSentIndex = controller.currentQuestionIndex
 	controller.GetTotalQuestions()
 	questionDetails := controller.currentCuestionDetails(question.TypeQuestion, question)
 
@@ -135,6 +180,7 @@ func (controller *QuestionController) currentCuestionDetails(typeQuestion string
 			TotalQuestions        int                      `json:"total_questions"`
 			CurrentQuestionNumber int                      `json:"current_question_number"`
 			AnswerStatuses        []string                 `json:"answer_statuses"`
+			TrialsLeft            int                      `json:"trials_left"`
 		}{
 			ID:                    question.ID,
 			Text:                  question.ContentText,
@@ -149,6 +195,7 @@ func (controller *QuestionController) currentCuestionDetails(typeQuestion string
 			TotalQuestions:        controller.totalQuestions,
 			CurrentQuestionNumber: controller.currentQuestionIndex,
 			AnswerStatuses:        controller.questionStatuses,
+			TrialsLeft:            controller.questionTrialsLeft[controller.currentQuestionIndex-1],
 		}
 		return questionDetails
 	} else {
@@ -165,6 +212,7 @@ func (controller *QuestionController) currentCuestionDetails(typeQuestion string
 			TotalQuestions        int                      `json:"total_questions"`
 			CurrentQuestionNumber int                      `json:"current_question_number"`
 			AnswerStatuses        []string                 `json:"answer_statuses"`
+			TrialsLeft            int                      `json:"trials_left"`
 		}{
 			ID:                    question.ID,
 			Text:                  question.ContentText,
@@ -178,6 +226,7 @@ func (controller *QuestionController) currentCuestionDetails(typeQuestion string
 			TotalQuestions:        controller.totalQuestions,
 			CurrentQuestionNumber: controller.currentQuestionIndex,
 			AnswerStatuses:        controller.questionStatuses,
+			TrialsLeft:            controller.questionTrialsLeft[controller.currentQuestionIndex-1],
 		}
 		return questionDetails
 	}
@@ -205,6 +254,54 @@ func (controller *QuestionController) SetCurrentQuestion(w http.ResponseWriter, 
 		return
 	}
 	controller.SetCurrentQuestionIndex(idInt)
+}
+
+// GetScore calculates the score for config_test questions and multiple_choice questions.
+func (controller *QuestionController) GetScore(w http.ResponseWriter, r *http.Request) {
+	globalCompletedSum := sum(controller.completedQuestionTrials)
+	maxCompletedScore := sum(controller.questionTrials)
+	globalScore := float64(globalCompletedSum) / float64(maxCompletedScore) * 100
+
+	configTestCompletedSum := 0
+	configTestMaxScore := 0
+	multipleChoiceCompletedSum := 0
+	multipleChoiceMaxScore := 0
+
+	for i, questionType := range controller.questionTypes {
+		if questionType == "config_test" {
+			configTestCompletedSum += controller.completedQuestionTrials[i]
+			configTestMaxScore += controller.questionTrials[i]
+		} else if questionType == "multiple_choice" {
+			multipleChoiceCompletedSum += controller.completedQuestionTrials[i]
+			multipleChoiceMaxScore += controller.questionTrials[i]
+		}
+	}
+
+	configTestScore := float64(configTestCompletedSum) / float64(configTestMaxScore) * 100
+	multipleChoiceScore := float64(multipleChoiceCompletedSum) / float64(multipleChoiceMaxScore) * 100
+
+	response := map[string]float64{
+		"Global_Score":          globalScore,
+		"Config_Test_Score":     configTestScore,
+		"Multiple_Choice_Score": multipleChoiceScore,
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResponse)
+}
+
+func sum(numbers []int) int {
+	total := 0
+	for _, num := range numbers {
+		total += num
+	}
+	return total
 }
 
 // SetCurrentQuestionIndex sets the current question index.
@@ -240,6 +337,10 @@ func (controller *QuestionController) GetTotalQuestionsStatus() []string {
 	return controller.questionStatuses
 }
 
+func (controller *QuestionController) SkipQuestion(w http.ResponseWriter, r *http.Request) {
+	controller.SetCurrentQuestionIndex(controller.currentQuestionIndex + 1)
+	w.WriteHeader(http.StatusOK)
+}
 func (controller *QuestionController) GetQuestion(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
@@ -363,11 +464,11 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	command_to_test := question.TestSpecFilename
 
 	// Run the validation task by executing the bash script
-	cmd := exec.Command("/bin/bash","-c",  command_to_test)
+	cmd := exec.Command("/bin/bash", "-c", command_to_test)
 	output, err := cmd.Output()
 	if err != nil {
 		errorMsg := fmt.Sprintf("Error running task: %v", command_to_test)
@@ -385,8 +486,11 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1]
+		controller.completedQuestionTrials[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.SetCurrentQuestionIndex(index + 1)
 	} else {
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1] - 1
 		errormsg := fmt.Sprintf("Error: %v", string(output))
 		http.Error(w, errormsg, http.StatusBadRequest)
 	}
@@ -413,14 +517,13 @@ func (controller *QuestionController) StageBeforeActions(w http.ResponseWriter, 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
 
 	question, err := controller.questionStore.GetQuestion(data.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	beforeActions := make([]map[string]interface{}, 0)
 	err = json.Unmarshal(question.BeforeActions, &beforeActions)
 	if err != nil {
