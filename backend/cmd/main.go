@@ -40,6 +40,7 @@ func main() {
 	r.HandleFunc("/questions/{id}", qc.DeleteQuestion).Methods("DELETE")
 	r.HandleFunc("/question", qc.GetCurrentQuestion).Methods("GET")
 	r.HandleFunc("/get_score", qc.GetScore).Methods("GET")
+	r.HandleFunc("/trials", qc.GetTrials).Methods("GET")
 	r.HandleFunc("/skip_question", qc.SkipQuestion).Methods("GET")
 	r.HandleFunc("/submit_answer", qc.CheckMultipleChoice).Methods("POST", "OPTIONS")
 	r.HandleFunc("/stage_before_actions", qc.StageBeforeActions).Methods("POST", "OPTIONS")

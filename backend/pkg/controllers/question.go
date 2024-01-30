@@ -127,12 +127,12 @@ func (controller *QuestionController) CheckMultipleChoice(w http.ResponseWriter,
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1]
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.completedQuestionTrials[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.SetCurrentQuestionIndex(index + 1)
 		w.WriteHeader(http.StatusOK)
 	} else {
-		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1] - 1
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1] - 1
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
@@ -150,10 +150,10 @@ func (controller *QuestionController) GetCurrentQuestion(w http.ResponseWriter, 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if controller.lastQuestionSentIndex == controller.currentQuestionIndex-1 {
-		controller.questionTrialsLeft[controller.currentQuestionIndex] = trials
+	if controller.lastQuestionSentIndex == (controller.currentQuestionIndex - 1) {
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = trials
 	} else {
-		controller.questionTrialsLeft[controller.currentQuestionIndex] = trials - 1
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = trials - 1
 	}
 	controller.lastQuestionSentIndex = controller.currentQuestionIndex
 	controller.GetTotalQuestions()
@@ -294,6 +294,10 @@ func (controller *QuestionController) GetScore(w http.ResponseWriter, r *http.Re
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResponse)
+}
+
+func (controller *QuestionController) GetTrials(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Trials: %x", controller.questionTrialsLeft)
 }
 
 func sum(numbers []int) int {
@@ -486,11 +490,12 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1]
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.completedQuestionTrials[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1]
 		controller.SetCurrentQuestionIndex(index + 1)
+		w.WriteHeader(http.StatusOK)
 	} else {
-		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrials[controller.currentQuestionIndex-1] - 1
+		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1] - 1
 		errormsg := fmt.Sprintf("Error: %v", string(output))
 		http.Error(w, errormsg, http.StatusBadRequest)
 	}
