@@ -34,6 +34,10 @@
     /* Slightly larger font for the timer */
 }
 
+.reset-button{
+    cursor: pointer;
+}
+
 .expand-button {
     background: none;
     border: none;

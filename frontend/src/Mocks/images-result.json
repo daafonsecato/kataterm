@@ -1,0 +1,30 @@
+{
+  "text": "Here's a fun one! Looking at the commit history of all branches, what's the best graphical representation of the branches in this repository?",
+  "subtext": "Checkout each branch and then use the command `git log --graph --decorate` to see previous branch. \n\n A. ![branch-1](https://res.cloudinary.com/cloudusthad/image/upload/w_300,c_scale/v1597113199/git/git-branch-2.png) \n\n  B. ![branch-1](https://res.cloudinary.com/cloudusthad/image/upload/w_400,c_scale/v1597113200/git/git-branch-4.png) \n\n C. ![branch-1](https://res.cloudinary.com/cloudusthad/image/upload/w_400,c_scale/v1597113432/git/git-branch-1.png) \n\n D. ![branch-1](https://res.cloudinary.com/cloudusthad/image/upload/w_400,c_scale/v1597113199/git/git-branch-3.png)",
+  "type": "multiple_choice",
+  "staging_message": "Setting things up",
+  "hint": "Checkout to directory `git checkout feature/signout; git log --graph --decorate`",
+  "image": "",
+  "options": ["A", "B", "C", "D"],
+  "answer": "D",
+  "total_questions": 16,
+  "current_question_number": 16,
+  "answer_statuses": [
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "current"
+  ]
+}
