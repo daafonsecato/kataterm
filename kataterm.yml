@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-katas-backend
+  labels:
+    app: back-katas-backend
+spec:
+  ports:
+  - port: 8000
+    name: backend
+  clusterIP: None
+  selector:
+    app: back-katas-backend
+---  
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-katas-codeeditor
+  labels:
+    app: back-katas-codeeditor
+spec:
+  ports:
+  - port: 8080
+    name: codeeditor
+  clusterIP: None
+  selector:
+    app: back-katas-codeeditor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-katas-ttyd
+  labels:
+    app: back-katas-ttyd
+spec:
+  ports:
+  - port: 7681
+    name: ttyd
+  clusterIP: None
+  selector:
+    app: back-katas-ttyd
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: back-katas
+spec:
+  selector:
+    matchLabels:
+      app: back-katas # has to match .spec.template.metadata.labels
+  serviceName: "back-katas"
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: back-katas # has to match .spec.selector.matchLabels
+  spec:
+
+    restartPolicy: Never
+
+    volumes:
+    - name: shared-data
+      emptyDir: {}
+
+    containers:
+
+    - name: backend
+      image: daafonsecato/kataterm-backend:latest
+      ports:
+        - containerPort: 8000
+
+    - name: validator
+      image: daafonsecato/kataterm-validator:latest
+      volumeMounts:
+      - name: shared-data
+        mountPath: /exercise
+      ports:
+        - containerPort: 8096
+
+    - name: gitkatas
+      image: daafonsecato/kataterm-gitkatas:latest
+      volumeMounts:
+      - name: shared-data
+        mountPath: /home/git-katas-user/exercise
+      ports:
+        - containerPort: 7681
+        - containerPort: 8080
+        - containerPort: 8095
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+spec:
+  rules:
+    - host: backend.terminal.kataterm.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: back-katas-backend
+                port:
+                  number: 8000
+    - host: ttyd.terminal.kataterm.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: back-katas-ttyd
+                port:
+                  number: 7681
+    - host: codeeditor.terminal.kataterm.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: back-katas-codeeditor
+                port:
+                  number: 8080
+  sessionAffinity: ClientIP

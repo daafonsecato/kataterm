@@ -1,13 +1,14 @@
 package controllers
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
-	"os/exec"
+	"os"
 	"strconv"
-	"strings"
 
 	"github.com/david8128/quizard-backend/pkg/db"
 	"github.com/david8128/quizard-backend/pkg/models"
@@ -73,14 +74,20 @@ func (controller *QuestionController) InitializeController() {
 	controller.completedQuestionTrials = make([]int, controller.totalQuestions)
 	controller.questionTrialsLeft = make([]int, controller.totalQuestions)
 
-	for i, question := range questions {
-		controller.questionTypes[i] = question.TypeQuestion
+	for _, question := range questions {
+		questionID, err := strconv.Atoi(question.ID)
+		if err != nil {
+			panic(err)
+		}
+		questionID = questionID - 1
+		controller.questionTypes[questionID] = question.TypeQuestion
 		trials, err := strconv.Atoi(question.Trials)
 		if err != nil {
 			panic(err)
 		}
-		controller.questionTrialsLeft[i] = trials
-		controller.questionTrials[i] = trials
+		controller.completedQuestionTrials[questionID] = 0
+		controller.questionTrialsLeft[questionID] = trials
+		controller.questionTrials[questionID] = trials
 	}
 
 	controller.SetCurrentQuestionIndex(1)
@@ -469,19 +476,30 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 		return
 	}
 
-	command_to_test := question.TestSpecFilename
-
-	// Run the validation task by executing the bash script
-	cmd := exec.Command("/bin/bash", "-c", command_to_test)
-	output, err := cmd.Output()
+	jsonData, err := json.Marshal(data)
 	if err != nil {
-		errorMsg := fmt.Sprintf("Error running task: %v", command_to_test)
-		http.Error(w, errorMsg, http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	validator_host := os.Getenv("VALIDATOR_HOST")
+	epvalidator := fmt.Sprintf("http://%s:8096/check_config", validator_host)
+	resp, err := http.Post(epvalidator, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Get the response body
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(string(respBody))
+
 	// Check if the output contains the word "success"
-	if strings.Contains(string(output), "success") {
+	if resp.StatusCode == http.StatusOK {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Accepted"))
 
@@ -496,7 +514,7 @@ func (controller *QuestionController) CheckConfig(w http.ResponseWriter, r *http
 		w.WriteHeader(http.StatusOK)
 	} else {
 		controller.questionTrialsLeft[controller.currentQuestionIndex-1] = controller.questionTrialsLeft[controller.currentQuestionIndex-1] - 1
-		errormsg := fmt.Sprintf("Error: %v", string(output))
+		errormsg := fmt.Sprintf("%v", string(respBody))
 		http.Error(w, errormsg, http.StatusBadRequest)
 	}
 }
@@ -529,33 +547,28 @@ func (controller *QuestionController) StageBeforeActions(w http.ResponseWriter, 
 		return
 	}
 
-	beforeActions := make([]map[string]interface{}, 0)
-	err = json.Unmarshal(question.BeforeActions, &beforeActions)
+	reqBody, err := json.Marshal(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	command_to_test := beforeActions[0]["command"].(string)
-
-	// Run the validation task by executing the bash script
-	cmd := exec.Command("/bin/bash", "-c", command_to_test)
-	output, err := cmd.Output()
+	gitkatas_host := os.Getenv("GITKATAS_HOST")
+	epgitkatas := fmt.Sprintf("http://%s:8095/stage_before_actions", gitkatas_host)
+	resp, err := http.Post(epgitkatas, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
-		errorMsg := fmt.Sprintf("Error running task: %v", command_to_test)
-		http.Error(w, errorMsg, http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	defer resp.Body.Close()
 	questionDetails := controller.currentCuestionDetails(question.TypeQuestion, question)
 
-	// Check if the output contains the word "success"
-	if output != nil {
+	if resp.StatusCode == http.StatusOK {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(questionDetails)
 	} else {
-		http.Error(w, "Output does not contain 'success'", http.StatusBadRequest)
+		http.Error(w, "Output does not contain 'accepted'", http.StatusBadRequest)
 	}
+
 }
 
 func (controller *QuestionController) DBSeed(w http.ResponseWriter, r *http.Request) {

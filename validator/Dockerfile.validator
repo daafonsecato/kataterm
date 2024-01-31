@@ -1,0 +1,35 @@
+# Dockerfile for terminalbackend.go
+FROM debian:sid
+
+LABEL maintainer="David Fonseca <8128david@gmail.com>"
+# Install golang, ttyd, curl and supervisord
+# RUN apt-get update && apt-get install -y python3-full golang nodejs npm git 
+RUN apt-get update && apt-get install -y git golang curl
+
+WORKDIR /app
+
+# Copy the Go files
+COPY . .
+
+# Install Air for live reloading
+RUN go mod download
+RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b /usr/bin
+
+COPY validation /validation
+ARG UNAME=git-katas-user
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID -o $UNAME
+RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+RUN chown -R git-katas-user:git-katas-user /app
+RUN chown -R git-katas-user:git-katas-user /validation
+USER $UNAME
+# Copy the Go filesbackend/Dockerfile.develop
+
+# Copy the start script
+COPY start_validator.sh /start.sh
+EXPOSE 8096
+
+
+# Use tini as the entry point and run the start script
+ENTRYPOINT ["/bin/bash", "/start.sh"]

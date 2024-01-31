@@ -11,11 +11,11 @@
             "False"
         ],
         "Answer": "True",
-        "Trials": "2",
+        "Trials": "1",
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "sleep 5; docker exec -u root gitkatas bash -c 'cd /home/git-katas-user; rm -rf exercise;';",
+                "command": "cd /home/git-katas-user; rm -rf exercise;",
                 "shell": true
             }
         ]
@@ -32,7 +32,7 @@
             "False"
         ],
         "Answer": "False",
-        "Trials": "2",
+        "Trials": "1",
         "Before_Actions": []
     },
     {
@@ -49,7 +49,7 @@
             "d)"
         ],
         "Answer": "d)",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -66,7 +66,7 @@
             "git amend, git revert, git reset"
         ],
         "Answer": "git remove, git retag, git amend",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -83,7 +83,7 @@
             "git merge --squash"
         ],
         "Answer": "git merge --ff-only and git rebase",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -100,7 +100,7 @@
             "git diff HEAD ~7"
         ],
         "Answer": "git diff",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -117,7 +117,7 @@
             "git rm --cached <filePath>"
         ],
         "Answer": "git restore <filePath>",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -134,7 +134,7 @@
             "git diff"
         ],
         "Answer": "git checkout - <target>",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -151,7 +151,7 @@
             "git reset"
         ],
         "Answer": "mv",
-        "Trials": "2",
+        "Trials": "3",
         "Before_Actions": []
     },
     {
@@ -167,11 +167,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-cleaning/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/basic-cleaning/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_cleaning.sh';"
+        "Test_spec_filename": "bash /validation/test_basic_cleaning.sh"
     },
     {
         "ID": "11",
@@ -186,11 +186,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-branching/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/basic-branching/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_branching.sh';"
+        "Test_spec_filename": "bash /validation/test_basic_branching.sh"
     },
     {
         "ID": "12",
@@ -205,11 +205,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-staging/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/basic-staging/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_staging.sh';"
+        "Test_spec_filename": "bash /validation/test_basic_staging.sh"
     },
     {
         "ID": "13",
@@ -224,11 +224,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/ff-merge/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/ff-merge/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_ff-merge.sh';"
+        "Test_spec_filename": "bash /validation/test_ff-merge.sh"
     },
     {
         "ID": "14",
@@ -243,11 +243,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/rebase-multiple-commits/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/rebase-multiple-commits/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-multiple-commits.sh';"
+        "Test_spec_filename": "bash /validation/test_rebase-multiple-commits.sh"
     },
     {
         "ID": "15",
@@ -262,11 +262,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/ignore/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/ignore/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_ignore.sh';"
+        "Test_spec_filename": "bash /validation/test_basic_ignore.sh"
     },
     {
         "ID": "16",
@@ -281,11 +281,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/3-way-merge/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/3-way-merge/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_3-way-merge.sh';"
+        "Test_spec_filename": "bash /validation/test_3-way-merge.sh"
     },
     {
         "ID": "17",
@@ -300,11 +300,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/basic-cherry-pick/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/basic-cherry-pick/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_basic_cherry-pick.sh';"
+        "Test_spec_filename": "bash /validation/test_basic_cherry-pick.sh"
     },
     {
         "ID": "18",
@@ -319,11 +319,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/merge-conflict/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/merge-conflict/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_merge_conflict.sh';"
+        "Test_spec_filename": "bash /validation/test_merge_conflict.sh"
     },
     {
         "ID": "19",
@@ -338,11 +338,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/reset/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/reset/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_reset.sh';"
+        "Test_spec_filename": "bash /validation/test_reset.sh"
     },
     {
         "ID": "20",
@@ -357,11 +357,11 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/advanced-rebase-interactive/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/advanced-rebase-interactive/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_rebase-interactive.sh';"
+        "Test_spec_filename": "bash /validation/test_rebase-interactive.sh"
     },
     {
         "ID": "21",
@@ -376,10 +376,10 @@
         "Before_Actions": [
             {
                 "type": "command",
-                "command": "docker exec -u root gitkatas bash -c 'chmod o+rx /var/hidden; chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise;  cd /home/git-katas-user; su - git-katas-user -c \". /var/hidden/git-katas/change-author/setup.sh\";'",
+                "command": "cd /home/git-katas-user/; . /var/hidden/git-katas/change-author/setup.sh",
                 "shell": true
             }
         ],
-        "Test_spec_filename": "docker exec validator bash -c 'bash /validation/test_change_author.sh';"
+        "Test_spec_filename": "bash /validation/test_change_author.sh"
     }
 ]

@@ -14,7 +14,7 @@ CREATE TABLE questions (
 CREATE TABLE machines (
     id SERIAL PRIMARY KEY,
     aws_instance_id VARCHAR(255) NOT NULL,
-    status VARCHAR(50) NOT NULL,
+    machine_status VARCHAR(50) NOT NULL,
     domain VARCHAR(255) NOT NULL
 );
 CREATE TABLE sessions (

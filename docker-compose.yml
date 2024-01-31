@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: daafonsecato/kataterm-postgres:latest
+    image: daafonsecato/kataterm-postgres:v2
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -18,7 +18,7 @@ services:
       - quizard_network
 
   frontend:
-    image: daafonsecato/kataterm-frontend:latest
+    image: daafonsecato/kataterm-frontend:v2
     build:
       context: ./frontend
       dockerfile: Dockerfile.develop
@@ -34,7 +34,7 @@ services:
       - quizard_network
 
   backend:
-    image: daafonsecato/kataterm-backend:latest
+    image: daafonsecato/kataterm-backend:v2
     build:
       context: ./backend
       dockerfile: Dockerfile.develop
@@ -46,15 +46,13 @@ services:
       - postgres
     volumes:
       - ./backend:/app
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=development
     networks:
       - quizard_network
-    privileged: true  
 
   reverseproxy:
-    image: daafonsecato/kataterm-reverseproxy:latest
+    image: daafonsecato/kataterm-reverseproxy:v2
     build:
       context: ./reverseproxy
       dockerfile: Dockerfile
@@ -72,24 +70,33 @@ services:
       - quizard_network
 
   gitkatas:
-    image: daafonsecato/kataterm-gitkatas:latest
+    image: daafonsecato/kataterm-gitkatas:v2
     build:
-      context: ./ch1-git-katas
+      context: ./gitkatas
       dockerfile: Dockerfile.gitkatas
+    env_file:
+      - ./gitkatas/.env
     ports:
       - 7681:7681
       - 8080:8080
+      - 8095:8095
     volumes:
+      - ./gitkatas:/app
       - ./ch1-git-katas/exercise:/home/git-katas-user/exercise
     networks:
       - quizard_network
 
   validator:
-    image: daafonsecato/kataterm-validator:latest
+    image: daafonsecato/kataterm-validator:v2
     build:
-      context: ./ch1-git-katas
+      context: ./validator
       dockerfile: Dockerfile.validator
+    env_file:
+      - ./validator/.env
+    ports:
+      - 8096:8096
     volumes:
+      - ./validator:/app
       - ./ch1-git-katas/validation:/validation
       - ./ch1-git-katas/exercise:/exercise
     networks:
