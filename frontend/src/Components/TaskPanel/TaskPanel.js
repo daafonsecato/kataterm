@@ -280,7 +280,7 @@ function TaskPanel() {
       {isLoading ? ( // Conditional rendering for loader
         <div className="loader">Loading...</div>
       ) : (
-        transformJsonToComponent(mockData)
+        transformJsonToComponent(taskDetails)
       )}
 
       <div className="task-panel-footer">
