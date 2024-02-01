@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 
-const CountdownTimer = ({ initialTime }) => {
-  const [initHours, initMinutes, initSeconds] = initialTime.split(":");
-  const initialSeconds =
-    +initHours * 60 * 60 + +initMinutes * 60 + +initSeconds;
+const Timer = ({ initialTime, increment }) => {
+  
+    const [initHours, initMinutes, initSeconds] = initialTime.split(":");
+    const initialSeconds =
+      +initHours * 60 * 60 + +initMinutes * 60 + +initSeconds;
 
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
-    if (seconds <= 0) {
+    if (seconds <= 0 && increment <= -1) {
       return;
     }
     const timer = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds - 1);
+      setSeconds((prevSeconds) => prevSeconds + increment);
     }, 1000);
     return () => clearInterval(timer);
   }, [seconds]);
@@ -33,4 +34,4 @@ const CountdownTimer = ({ initialTime }) => {
     </div>
   );
 };
-export default CountdownTimer;
+export default Timer;

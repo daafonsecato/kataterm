@@ -1,5 +1,5 @@
 import React from "react";
-import CountdownTimer from "../CountdownTimer/CountdownTimer";
+import Timer from "../Timer/Timer";
 import ResetButton from "../ResetButton/ResetButton";
 import ExpandButton from "../ExpandButton/ExpandButton";
 
@@ -7,7 +7,7 @@ const TaskPanelHeader = ({ resetQuestion }) => {
   return (
     <div className="task-panel-header">
       <h2>Task</h2>
-			<CountdownTimer initialTime={'01:00:10'}/>
+			<Timer initialTime={'00:00:00'} increment={1} />
 			<ResetButton resetQuestion={resetQuestion} />
 			<ExpandButton />
     </div>
