@@ -4,6 +4,7 @@ import mockData from "../../Mocks/images-result.json";
 import "./TaskPanel.css";
 import { marked } from "marked";
 import TaskPanelHeader from "../TaskPanelHeader/TaskPanelHeader";
+import ImagesOptions from "../ImagesOptions/ImagesOptions";
 
 function TaskPanel() {
   const [taskDetails, setTaskDetails] = useState("");
@@ -53,7 +54,7 @@ function TaskPanel() {
       console.error("Error submitting answer:", error);
     }
   };
-	
+
   async function setupQuestion(data) {
     try {
       setIsLoading(true); // Show loader
@@ -174,6 +175,11 @@ function TaskPanel() {
           </div>
           <div className="main-content">
             <div className="question-text">{jsonData.text}</div>
+            {jsonData?.subtext && jsonData?.subtext.includes("![branch-1]") ? (
+              <ImagesOptions subtext={jsonData.subtext} />
+            ) : (
+              <p>{jsonData.subtext}</p>
+            )}
             <div className="answer-buttons">
               {jsonData.options.map((option, index) => {
                 const isCorrect = option === jsonData.answer;

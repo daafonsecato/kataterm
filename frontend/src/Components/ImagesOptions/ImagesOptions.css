@@ -1,0 +1,15 @@
+.figure-option {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.figure-option__image {
+    /* object-fit: contain; */
+    max-block-size: 128px;
+}
+
+.figure-option__figcaption {
+    margin-right: 1rem;
+}
