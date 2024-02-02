@@ -15,6 +15,7 @@ COPY . .
 RUN go mod download
 RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b /usr/bin
 
+USER root
 COPY validation /validation
 ARG UNAME=git-katas-user
 ARG UID=1000
@@ -23,6 +24,8 @@ RUN groupadd -g $GID -o $UNAME
 RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
 RUN chown -R git-katas-user:git-katas-user /app
 RUN chown -R git-katas-user:git-katas-user /validation
+# Create the tmp directory and set permissions
+RUN mkdir -p /app/tmp && chown -R git-katas-user:git-katas-user /app/tmp
 USER $UNAME
 # Copy the Go filesbackend/Dockerfile.develop
 

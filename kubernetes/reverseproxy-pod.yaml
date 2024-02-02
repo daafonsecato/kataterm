@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: reverseproxy-pod
+spec:
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+  containers:
+    - name: reverseproxy
+      image: daafonsecato/kataterm-reverseproxy:v2
+      ports:
+        - containerPort: 7070
+        - containerPort: 9090
+      env:
+        - name: DB_HOST
+          value: postgres
+        - name: DB_NAME
+          value: your_database_name
+        - name: DB_PASS
+          value: your_password
+        - name: DB_USER
+          value: your_username
+      volumeMounts:
+        - name: reverseproxy-volume
+          mountPath: /app
+  volumes:
+    - name: reverseproxy-volume
+      hostPath:
+        path: /home/ubuntu/kataterm/reverseproxy

@@ -12,7 +12,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_ami" "amazon_linux" {
+data "aws_ami" "ubuntu_linux" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -82,12 +82,30 @@ resource "aws_security_group" "my_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["190.69.210.251/32"]
+    cidr_blocks = ["152.203.171.17/32"]
   }
 
   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
     from_port   = 80
-    to_port     = 10000
+    to_port     = 65000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -101,16 +119,16 @@ resource "aws_security_group" "my_security_group" {
 }
 
 resource "aws_eip" "my_eip" {
-  instance = aws_instance.my_ec2_instance.id
+  instance = aws_instance.my_ec2_instance[0].id
 }
 
 resource "aws_eip_association" "my_eip_association" {
-  instance_id   = aws_instance.my_ec2_instance.id
+  instance_id   = aws_instance.my_ec2_instance[0].id
   allocation_id = aws_eip.my_eip.id
 }
-
 resource "aws_instance" "my_ec2_instance" {
-  ami                    = "ami-0d617a6646547e912"
+  count                  = 3
+  ami                    = data.aws_ami.ubuntu_linux.id
   instance_type          = "t2.medium"
   key_name               = "my-key-pair"
   subnet_id              = aws_subnet.my_subnet.id
@@ -119,14 +137,23 @@ resource "aws_instance" "my_ec2_instance" {
 #!/bin/bash
 yum install amazon-linux-extras -y docker
 yum install -y git
-# Add your commands here
 echo "User-data commands executed successfully."
-        EOF
+  EOF
+  root_block_device {
+    volume_size = 40
+  }
 
   tags = {
     project = "Kataterm"
-    Name    = "my-ec2-instance"
+    Name    = "my-ec2-instance-${count.index + 1}"
   }
+
+  disable_api_termination = true
+}
+
+output "ssh_connect_command" {
+  value      = "ssh -i ~/.ssh/suretro ec2-user@${aws_instance.my_ec2_instance[0].public_ip}"
+  depends_on = [aws_instance.my_ec2_instance]
 }
 
 
@@ -137,9 +164,4 @@ resource "aws_key_pair" "my_key_pair" {
   tags = {
     project = "Kataterm"
   }
-}
-
-output "ssh_connect_command" {
-  value      = "ssh -i ~/.ssh/suretro ec2-user@${aws_instance.my_ec2_instance.public_ip}"
-  depends_on = [aws_instance.my_ec2_instance]
 }

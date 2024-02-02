@@ -1,0 +1,29 @@
+# Config file for Air
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  args_bin = []
+  bin = "./tmp/main"
+  cmd = "go build -o ./tmp/main ./cmd/main.go"
+  tmp_dir = "./tmp"
+  include_dir = ["cmd","pkg","internal"]
+  include_ext = ["go", "env"]
+  kill_delay = "0s"
+  log = "build-errors.log"
+  send_interrupt = false
+  stop_on_error = true
+
+[env]
+  include = ['.env']
+[log]
+  level = "debug"
+
+[color]
+  main = "cyan"
+  watcher = "magenta"
+  build = "yellow"
+  runner = "green"
+
+[misc]
+  clean_on_exit = true

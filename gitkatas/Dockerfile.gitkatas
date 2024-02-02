@@ -36,6 +36,7 @@ USER root
 RUN chown -R git-katas-user:git-katas-user /var/hidden
 RUN chown -R git-katas-user:git-katas-user /home/git-katas-user/exercise
 RUN chown -R git-katas-user:git-katas-user /app
+RUN mkdir -p /app/tmp && chown -R git-katas-user:git-katas-user /app/tmp
 USER $UNAME
 
 # Expose the necessary port
