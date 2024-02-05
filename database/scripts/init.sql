@@ -11,16 +11,16 @@ CREATE TABLE questions (
   Test_spec_filename VARCHAR(255),
   Trials VARCHAR(255) NOT NULL
 );
-CREATE TABLE machines (
+CREATE TABLE pods (
     id SERIAL PRIMARY KEY,
-    aws_instance_id VARCHAR(255) NOT NULL,
-    machine_status VARCHAR(50) NOT NULL,
+    pod_name VARCHAR(255) NOT NULL,
+    pod_status VARCHAR(50) NOT NULL,
     domain VARCHAR(255) NOT NULL
 );
 CREATE TABLE sessions (
     id SERIAL PRIMARY KEY,
     session_id UUID NOT NULL,
-    machine_id INTEGER NOT NULL,
-    FOREIGN KEY (machine_id) REFERENCES machines(id)
+    pod_id INTEGER NOT NULL,
+    FOREIGN KEY (pod_id) REFERENCES pods(id)
 );
 CREATE INDEX idx_session_id ON sessions(session_id);

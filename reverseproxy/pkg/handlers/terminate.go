@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type TerminationRequest struct {
@@ -28,22 +31,44 @@ func (controller *SessionController) TerminateMachineHandler(w http.ResponseWrit
 		return
 	}
 
-	// Get the InstanceID using the GetAWSInstanceID function from the models package
-	instanceID, err := controller.sessionStore.GetAWSInstanceID(req.SessionID)
+	// Get the PodName using the GetPodNameBySessionId function from the models package
+	podName, err := controller.sessionStore.GetPodNameBySessionId(req.SessionID)
 	if err != nil {
-		log.Printf("Failed to get InstanceID: %v", err)
-		http.Error(w, fmt.Sprintf("Error getting InstanceID: %v", err), http.StatusInternalServerError)
+		log.Printf("Failed to get PodName: %v", err)
+		http.Error(w, fmt.Sprintf("Error getting PodName: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Call the terminateInstance function from the services package with the obtained InstanceID
-	err = controller.AWSService.TerminateInstance(instanceID)
+	// Remove the pod by PodName
+	err = controller.clientset.CoreV1().Pods(controller.namespace).Delete(context.TODO(), podName, metav1.DeleteOptions{})
+
+	beSvcName := fmt.Sprintf("backend-svc-%s", req.SessionID)
+	ttydSvcName := fmt.Sprintf("ttyd-svc-%s", req.SessionID)
+	codeSvcName := fmt.Sprintf("codeeditor-svc-%s", req.SessionID)
+	// Delete the backend service
+	err = controller.clientset.CoreV1().Services(controller.namespace).Delete(context.TODO(), beSvcName, metav1.DeleteOptions{})
 	if err != nil {
-		log.Printf("Failed to terminate m achine: %v", err)
-		http.Error(w, fmt.Sprintf("Error terminating machine: %v", err), http.StatusInternalServerError)
+		log.Printf("Failed to delete backend service: %v", err)
+		http.Error(w, fmt.Sprintf("Error deleting backend service: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Delete the ttyd service
+	err = controller.clientset.CoreV1().Services(controller.namespace).Delete(context.TODO(), ttydSvcName, metav1.DeleteOptions{})
+	if err != nil {
+		log.Printf("Failed to delete ttyd service: %v", err)
+		http.Error(w, fmt.Sprintf("Error deleting ttyd service: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Delete the code editor service
+	err = controller.clientset.CoreV1().Services(controller.namespace).Delete(context.TODO(), codeSvcName, metav1.DeleteOptions{})
+	if err != nil {
+		log.Printf("Failed to delete code editor service: %v", err)
+		http.Error(w, fmt.Sprintf("Error deleting code editor service: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	// Send a success response
-	fmt.Fprintf(w, "Machine terminated successfully for session ID: %s", req.SessionID)
+	fmt.Fprintf(w, "Pod deleted successfully for session ID: %s", req.SessionID)
 }

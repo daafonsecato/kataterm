@@ -1,11 +1,10 @@
 package models
 
-func (store *SessionStore) GetMachineHost(machineID string) (string, error) {
-	var host string
-	query := `SELECT domain FROM machines WHERE aws_instance_id = $1`
-	err := store.db.QueryRow(query, machineID).Scan(&host)
-	if err != nil {
-		return "", err
-	}
-	return host, nil
+import (
+	"fmt"
+)
+
+func (store *SessionStore) GetServiceFromSessionID(SessionID string, service string) (string, error) {
+	svc_host := fmt.Sprintf("%s-svc-%s", service, SessionID)
+	return svc_host, nil
 }

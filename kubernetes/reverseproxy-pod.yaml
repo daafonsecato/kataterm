@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: reverseproxy-pod
+  labels:
+    app: reverseproxy-pod
 spec:
   tolerations:
     - key: node-role.kubernetes.io/control-plane

@@ -1,44 +1,33 @@
 package models
 
-import (
-	"github.com/google/uuid"
-)
-
-func (store *SessionStore) StoreMachineAndSession(awsInstanceID string, ipAddress string) (*uuid.UUID, error) {
+func (store *SessionStore) StoreMachineAndSession(awsInstanceID string, ipAddress string, sessionID string) error {
 	// Start a transaction
 	tx, err := store.db.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Insert into machines table
-	var machineID int
-	insertMachineQuery := `INSERT INTO machines (aws_instance_id, status, domain) VALUES ($1, $2, $3) RETURNING id`
-	err = tx.QueryRow(insertMachineQuery, awsInstanceID, "pending", ipAddress).Scan(&machineID)
+	var pod_id int
+	insertMachineQuery := `INSERT INTO pods (pod_name, pod_status, domain) VALUES ($1, $2, $3) RETURNING id`
+	err = tx.QueryRow(insertMachineQuery, awsInstanceID, "pending", ipAddress).Scan(&pod_id)
 	if err != nil {
 		tx.Rollback()
-		return nil, err
-	}
-
-	// Generate a new UUID for the session
-	sessionID, err := uuid.NewUUID()
-	if err != nil {
-		tx.Rollback()
-		return nil, err
+		return err
 	}
 
 	// Insert into sessions table
-	insertSessionQuery := `INSERT INTO sessions (session_id, machine_id) VALUES ($1, $2)`
-	_, err = tx.Exec(insertSessionQuery, sessionID, machineID)
+	insertSessionQuery := `INSERT INTO sessions (session_id, pod_id) VALUES ($1, $2)`
+	_, err = tx.Exec(insertSessionQuery, sessionID, pod_id)
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return err
 	}
 	err = tx.Commit()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Commit the transaction
-	return &sessionID, nil
+	return nil
 }

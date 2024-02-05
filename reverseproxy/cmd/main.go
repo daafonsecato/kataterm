@@ -1,15 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+
 	"github.com/daafonsecato/kataterm-reverseproxy/pkg/handlers"
 	"github.com/gorilla/mux"
 )
 
 func main() {
 
-	r := mux.NewRouter()
 	// Enable CORS
 	corsMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -26,22 +28,52 @@ func main() {
 			next.ServeHTTP(w, r)
 		})
 	}
-
+	// Session controller
 	sc := handlers.NewSessionController()
 
-	r.HandleFunc("/create", sc.CreateMachineHandler).Methods("GET")
-	r.HandleFunc("/terminate", sc.TerminateMachineHandler).Methods("POST", "OPTIONS")
-	r.Use(corsMiddleware)
+	// Start session controller in a separate goroutine
+	go func() {
+		r := mux.NewRouter()
+		r.HandleFunc("/create", sc.CreateKubernetesPodHandler).Methods("GET")
+		r.HandleFunc("/terminate", sc.TerminateMachineHandler).Methods("POST", "OPTIONS")
+		r.Use(corsMiddleware)
+		log.Fatal(http.ListenAndServe(":9090", r))
+	}()
 
-	http.ListenAndServe(":9090", r)
+	proxy := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		// Extract UUID and service name from the request host
+		targetURL, err := handlers.ExtractUUIDAndServiceName(req.Host)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(rw, err)
+			return
+		}
+		// Use the new host if it's different from targetURL
+		if targetURL != nil {
+			req.URL.Host = targetURL.Host
+		}
 
-	sc2 := handlers.NewSessionController()
-	proxy := sc2.CustomDirector()
+		req.URL.Scheme = targetURL.Scheme
+		req.RequestURI = ""
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(rw, err)
+			return
+		}
+		for key, values := range resp.Header {
+			for _, value := range values {
+				rw.Header().Set(key, value)
+			}
+		}
+		rw.WriteHeader(resp.StatusCode)
+		io.Copy(rw, resp.Body)
+	})
+	// Start reverse proxy in a separate goroutine
+	go func() {
+		log.Fatal(http.ListenAndServe(":7070", proxy))
+	}()
 
-	r2 := mux.NewRouter()
-
-	http.Handle("/", proxy)
-	log.Println("Reverse proxy server started on :7070")
-	log.Fatal(http.ListenAndServe(":7070", r2))
-
+	// Wait indefinitely to keep the main goroutine running
+	select {}
 }

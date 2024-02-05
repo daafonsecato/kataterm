@@ -3,64 +3,40 @@ package handlers
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"strings"
-
-	"net/http/httputil"
 	"net/url"
+	"strings"
 )
 
-func NewReverseProxy(targetHost string, targetPort string) *httputil.ReverseProxy {
-	target := &url.URL{
-		Scheme: "http",
-		Host:   targetHost + ":" + targetPort,
+func ExtractUUIDAndServiceName(host string) (*url.URL, error) {
+	var targetURL *url.URL
+	var err error
+
+	// Extract the first subdomains from the host
+	subdomains := strings.Split(host, ".")
+	if len(subdomains) < 3 {
+		log.Fatalf("Invalid host: %s", host)
+		return nil, err
 	}
 
-	return httputil.NewSingleHostReverseProxy(target)
-}
+	// Extract the UUID and service name using regular expressions
+	uuid := subdomains[0]
+	service := subdomains[1]
 
-func (controller *SessionController) CustomDirector() *httputil.ReverseProxy {
-	return &httputil.ReverseProxy{
-		Director: func(req *http.Request) {
-			host := req.Host
-			subdomains := strings.Split(host, ".")
-
-			// Assuming the format is [sessionID].[service].terminal.kataterm.com
-			if len(subdomains) < 4 {
-				log.Println("Invalid host:", host)
-				return // Or set a default targetHost
-			}
-			fmt.Println(subdomains)
-			sessionID := subdomains[0]
-			service := subdomains[1]
-			machineID, err := controller.sessionStore.GetAWSInstanceID(sessionID)
-			if err != nil {
-				log.Println("Error getting machine ID:", err)
-				return // Or set a default targetHost
-			}
-			// Get the host for the machine
-			targetHost, err := controller.sessionStore.GetMachineHost(machineID)
-			if err != nil {
-				log.Println("Error getting machine host:", err)
-				return // Or set a default targetHost
-			}
-
-			var port string
-			switch service {
-			case "backend":
-				port = "8000"
-			case "ttyd":
-				port = "7681"
-			case "code-server":
-				port = "8080"
-			// Add more cases as needed for different services
-			default:
-				log.Println("Service not recognized:", service)
-				return // Or set a default port
-			}
-
-			// Modify the request to route to the target host and port
-			req.URL.Host = targetHost + ":" + port
-		},
+	switch service {
+	case "backend":
+		targetURL, err = url.Parse("http://backend-svc-" + uuid + ":8000")
+	case "ttyd":
+		targetURL, err = url.Parse("http://ttyd-svc-" + uuid + ":7681")
+	case "codeeditor":
+		targetURL, err = url.Parse("http://codeeditor-svc-" + uuid + ":8080")
+	default:
+		return nil, fmt.Errorf("unknown service type: %s", service)
 	}
+
+	if len(uuid) < 2 || len(service) < 2 {
+		log.Fatalf("Invalid UUID or service name: %s", host)
+		return nil, err
+	}
+
+	return targetURL, err
 }
