@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './ResultView.css';
+import { HostnamesContext } from "../../Contexts/Hostnames";
 
 const ResultView = () => {
     const [scores, setScores] = useState(null);
+    const { hostnames } = useContext(HostnamesContext);
 
+    const backendUrl = hostnames.backend;
     useEffect(() => {
-        fetch('http://terminal.kataterm.com:8000/get_score')
+        fetch(`http://${backendUrl}/get_score`)
             .then(response => response.json())
             .then(data => setScores(data))
             .catch(error => console.log(error));

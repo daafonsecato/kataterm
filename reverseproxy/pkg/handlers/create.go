@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -219,5 +220,11 @@ func (controller *SessionController) CreateKubernetesPodHandler(w http.ResponseW
 		fmt.Fprintf(w, "Failed to store session in the database: %s", err)
 		return
 	}
-	fmt.Fprint(w, PodUuid)
+	newUUID := struct {
+		PodUUID string `json:"newUUID"`
+	}{
+		PodUUID: PodUuid,
+	}
+
+	json.NewEncoder(w).Encode(newUUID)
 }

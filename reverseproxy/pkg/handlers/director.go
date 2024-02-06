@@ -2,10 +2,42 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"strings"
 )
+
+func (controller *SessionController) ReverseProxyHandler(rw http.ResponseWriter, req *http.Request) {
+	// Extract UUID and service name from the request host
+	targetURL, err := ExtractUUIDAndServiceName(req.Host)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(rw, err)
+		return
+	}
+	// Use the new host if it's different from targetURL
+	if targetURL != nil {
+		req.URL.Host = targetURL.Host
+	}
+
+	req.URL.Scheme = targetURL.Scheme
+	req.RequestURI = ""
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(rw, err)
+		return
+	}
+	for key, values := range resp.Header {
+		for _, value := range values {
+			rw.Header().Set(key, value)
+		}
+	}
+	rw.WriteHeader(resp.StatusCode)
+	io.Copy(rw, resp.Body)
+}
 
 func ExtractUUIDAndServiceName(host string) (*url.URL, error) {
 	var targetURL *url.URL

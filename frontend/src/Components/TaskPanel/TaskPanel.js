@@ -1,18 +1,22 @@
 // TaskPanel.js
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import mockData from "../../Mocks/images-result.json";
 import "./TaskPanel.css";
 import { marked } from "marked";
 import TaskPanelHeader from "../TaskPanelHeader/TaskPanelHeader";
 import ImagesOptions from "../ImagesOptions/ImagesOptions";
+import { HostnamesContext } from "../../Contexts/Hostnames";
 
 function TaskPanel() {
+  const { hostnames } = useContext(HostnamesContext);
   const [taskDetails, setTaskDetails] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const [isConfigTestError, setIsConfigTestError] = useState(false); // Add isConfigTestError state
   const [configTestErrorMessage, setConfigTestErrorMessage] = useState(""); // Add congiTestErrorMessage state
   const taskPanelRef = useRef(null);
   const [trialsLeft, setTrialsLeft] = useState(0);
+
+  const backendUrl = hostnames.backend;
 
   useEffect(() => {
     setTrialsLeft(taskDetails ? taskDetails.trials_left : 0);
@@ -21,7 +25,7 @@ function TaskPanel() {
   const fetchTaskDetails = async () => {
     try {
       const response = await fetch(
-        "http://terminal.kataterm.com:8000/question"
+        `http://${backendUrl}/question`
       );
       let data;
       data = await response.json();
@@ -43,7 +47,7 @@ function TaskPanel() {
   const skipQuestion = async (event) => {
     try {
       const response = await fetch(
-        "http://terminal.kataterm.com:8000/skip_question",
+        `http://${backendUrl}/skip_question`,
         {
           method: "GET",
         }
@@ -60,7 +64,7 @@ function TaskPanel() {
       setIsLoading(true); // Show loader
       console.log("is loading");
       const response = await fetch(
-        "http://terminal.kataterm.com:8000/stage_before_actions",
+        `http://${backendUrl}/stage_before_actions`,
         {
           method: "POST",
           mode: "cors",
@@ -95,7 +99,7 @@ function TaskPanel() {
   async function checkConfig(questionID) {
     try {
       const response = await fetch(
-        "http://terminal.kataterm.com:8000/check_config",
+        `http://${backendUrl}/check_config`,
         {
           method: "POST",
           mode: "cors",
@@ -132,7 +136,7 @@ function TaskPanel() {
   async function submitAnswer(answer) {
     try {
       const response = await fetch(
-        "http://terminal.kataterm.com:8000/submit_answer",
+        `http://${backendUrl}/submit_answer`,
         {
           method: "POST",
           mode: "cors",
@@ -196,9 +200,8 @@ function TaskPanel() {
                   >
                     {option}
                     <span
-                      className={`answer-icon ${
-                        isCorrect ? "correct" : "incorrect"
-                      }`}
+                      className={`answer-icon ${isCorrect ? "correct" : "incorrect"
+                        }`}
                     ></span>
                   </button>
                 );

@@ -28,8 +28,6 @@ services:
       - ./frontend:/app
     environment:
       - NODE_ENV=development
-    env_file:
-      - ./frontend/.env
     networks:
       - quizard_network
 

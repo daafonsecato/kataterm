@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import TaskPanel from '../../Components/TaskPanel/TaskPanel';
 import TerminalPanel from '../../Components/TerminalPanel/TerminalPanel';
 import Split from 'react-split';
 import EditorPanel from '../../Components/EditorPanel/EditorPanel';
+import { HostnamesContext } from "../../Contexts/Hostnames";
 
 function QuestionView() {
-    const ttydUrl = process.env.REACT_APP_TTYD_SERVER_URL; // Replace with your ttyd URL
-    const codeServerUrl = process.env.REACT_APP_CODE_SERVER_URL; // Replace with your ttyd URL
+
+    const { hostnames } = useContext(HostnamesContext);
+    const ttydUrl = "http://" + hostnames.ttyd; // Replace with your ttyd URL
+    const codeServerUrl = "http://" + hostnames.codeServer; // Replace with your ttyd URL
 
     return (
         <div className="QuestionView">

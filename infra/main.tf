@@ -82,7 +82,7 @@ resource "aws_security_group" "my_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["152.203.171.17/32"]
+    cidr_blocks = ["152.203.164.230/32"]
   }
 
   ingress {
@@ -128,13 +128,14 @@ resource "aws_eip_association" "my_eip_association" {
 }
 resource "aws_instance" "my_ec2_instance" {
   count                  = 3
-  ami                    = data.aws_ami.ubuntu_linux.id
+  ami                    = "ami-029bdee89471523f0"
   instance_type          = "t2.medium"
   key_name               = "my-key-pair"
   subnet_id              = aws_subnet.my_subnet.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
   user_data              = <<-EOF
 #!/bin/bash
+
 yum install amazon-linux-extras -y docker
 yum install -y git
 echo "User-data commands executed successfully."
