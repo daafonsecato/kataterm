@@ -34,6 +34,7 @@ func main() {
 		r := mux.NewRouter()
 		r.HandleFunc("/create", sc.CreateKubernetesPodHandler).Methods("GET")
 		r.HandleFunc("/terminate", sc.TerminateMachineHandler).Methods("POST", "OPTIONS")
+		r.HandleFunc("/terminatemults", sc.TerminateMultipleMachinesHandler).Methods("POST", "OPTIONS")
 		r.Use(corsMiddleware)
 		log.Fatal(http.ListenAndServe(":9090", r))
 	}()

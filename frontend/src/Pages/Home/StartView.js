@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HostnamesContext } from "../../Contexts/Hostnames";
 
@@ -6,39 +6,97 @@ const StartView = () => {
 
     const { hostnames, setHostnames } = useContext(HostnamesContext)
     const navigate = useNavigate();
-
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleStart = () => {
-        // Hacer la primera solicitud al servicio proxy
+        setIsLoading(true);
+        if (!localStorage.getItem('sessionID')) {
+            createSession();
+        } else {
+            setHostnamesWithExistingSession();
+        }
+    };
+
+    const createSession = () => {
         fetch('http://terminal.kataterm.com:30009/create')
             .then(response => response.json())
             .then(data => {
-                // Supongamos que el servicio proxy devuelve el nuevo UUID del backend
                 const newUUID = data.newUUID;
-
-                // Construir los nuevos hostnames utilizando el nuevo UUID
-                const newHostnames = {
-                    backend: `${newUUID}.backend.terminal.kataterm.com:30007`,
-                    ttyd: `${newUUID}.ttyd.terminal.kataterm.com:30007`,
-                    codeServer: `${newUUID}.codeeditor.terminal.kataterm.com:30007`,
-                };
-
-                // Usage example
-                console.log(`Backend endpoint: http://${newHostnames.backend}`);
-                console.log(`TTYD endpoint: http://${newHostnames.ttyd}`);
-                console.log(`Code-server endpoint: http://${newHostnames.codeServer}`);
-                // Actualizar los hostnames utilizando el nuevo objeto de hostnames
+                const newHostnames = generateHostnames(newUUID);
+                localStorage.setItem('sessionID', newUUID);
                 setHostnames(newHostnames);
-
-                // Navegar a la vista del quiz
-                navigate('/quiz');
+                return newHostnames;
+            })
+            .then(newHostnames => {
+                performHealthChecks(newHostnames);
+            })
+            .catch(error => {
+                console.error(error);
             });
     };
+
+    const setHostnamesWithExistingSession = () => {
+        const sessionID = localStorage.getItem('sessionID');
+        const newHostnames = generateHostnames(sessionID);
+        setHostnames(newHostnames);
+        performHealthChecks(newHostnames);
+    };
+
+    const generateHostnames = (sessionID) => {
+        let hostnames = {
+            backend: `${sessionID}.backend.terminal.kataterm.com:30007`,
+            ttyd: `${sessionID}.ttyd.terminal.kataterm.com:30007`,
+            codeServer: `${sessionID}.codeeditor.terminal.kataterm.com:30007`,
+        }
+        console.log(hostnames);
+        return hostnames;
+    };
+
+    const performHealthChecks = (hostnames) => {
+        const healthChecks = Object.values(hostnames).map(hostname =>
+            fetch(`http://${hostname}${hostname === hostnames.backend ? '/trials' : '/'}`)
+                .then(response => {
+                    if (response.status === 200 || response.status === 404) {
+                        return Promise.resolve();
+                    } else {
+                        return Promise.reject(new Error(`Health check failed for ${hostname}`));
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    return Promise.reject(new Error(`Health check failed for ${hostname}`));
+                })
+        );
+
+        const checkHealth = () => {
+            Promise.all(healthChecks)
+                .then(() => {
+                    navigate('/quiz');
+                })
+                .catch(error => {
+                    console.error(error);
+                    setTimeout(checkHealth, 20000);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        };
+
+        checkHealth();
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            performHealthChecks(hostnames);
+        }, 20000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div>
             <h1>Welcome to Quizard!</h1>
-            <button onClick={handleStart}>Start</button>
+            <button onClick={handleStart} disabled={isLoading}>Start</button>
         </div>
     );
 };
