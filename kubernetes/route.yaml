@@ -1,0 +1,25 @@
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: firstingressroute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`39b3321c-25da-41c9-b19a-dfdf80339a8d.backend.terminal.kataterm.com`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: backend-svc-39b3321c-25da-41c9-b19a-dfdf80339a8d
+      port: 8000
+  - match: Host(`39b3321c-25da-41c9-b19a-dfdf80339a8d.ttyd.terminal.kataterm.com`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: ttyd-svc-39b3321c-25da-41c9-b19a-dfdf80339a8d
+      port: 7681
+  - match: Host(`39b3321c-25da-41c9-b19a-dfdf80339a8d.codeeditor.terminal.kataterm.com`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: codeeditor-svc-39b3321c-25da-41c9-b19a-dfdf80339a8d
+      port: 3000

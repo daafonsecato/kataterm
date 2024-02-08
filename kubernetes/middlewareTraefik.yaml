@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+    accessControlAllowHeaders:
+      - "*"
+    accessControlAllowOriginList:
+      - "http://frontend.terminal.kataterm.com"
+      - "http://frontend.terminal.kataterm.com:30713"
+    accessControlMaxAge: 100
+    addVaryHeader: true

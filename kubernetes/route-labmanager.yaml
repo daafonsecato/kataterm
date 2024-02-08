@@ -1,0 +1,15 @@
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: labmanager-ingressroute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`labmanager.terminal.kataterm.com`)
+    kind: Rule
+    services:
+    - name: reverseproxy-service
+      port: 9090
