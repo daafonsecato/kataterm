@@ -34,10 +34,33 @@ func (controller *SessionController) CreateKubernetesPodHandler(w http.ResponseW
 			},
 		},
 		Spec: corev1.PodSpec{
+			Tolerations: []corev1.Toleration{
+				{
+					Key:      "node-role.kubernetes.io/control-plane",
+					Operator: corev1.TolerationOpExists,
+					Effect:   corev1.TaintEffectNoSchedule,
+				},
+			},
+			Affinity: &corev1.Affinity{
+				NodeAffinity: &corev1.NodeAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{
+						NodeSelectorTerms: []corev1.NodeSelectorTerm{
+							{
+								MatchExpressions: []corev1.NodeSelectorRequirement{
+									{
+										Key:      "node-role.kubernetes.io/control-plane",
+										Operator: corev1.NodeSelectorOpExists,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			Containers: []corev1.Container{
 				{
 					Name:  "backend",
-					Image: "daafonsecato/kataterm-backend:v2",
+					Image: "daafonsecato/kataterm-backend:v3",
 					Ports: []corev1.ContainerPort{
 						{
 							ContainerPort: 8000,
@@ -78,10 +101,16 @@ func (controller *SessionController) CreateKubernetesPodHandler(w http.ResponseW
 							},
 						},
 					},
+					VolumeMounts: []corev1.VolumeMount{
+						{
+							Name:      "backend-volume",
+							MountPath: "/app",
+						},
+					},
 				},
 				{
 					Name:  "gitkatas",
-					Image: "daafonsecato/kataterm-gitkatas:v2",
+					Image: "daafonsecato/kataterm-gitkatas:v3",
 					SecurityContext: &corev1.SecurityContext{
 						RunAsUser:  func() *int64 { i := int64(1000); return &i }(),
 						RunAsGroup: func() *int64 { i := int64(1000); return &i }(),
@@ -112,7 +141,7 @@ func (controller *SessionController) CreateKubernetesPodHandler(w http.ResponseW
 				},
 				{
 					Name:  "validator",
-					Image: "daafonsecato/kataterm-validator:v2",
+					Image: "daafonsecato/kataterm-validator:v3",
 					SecurityContext: &corev1.SecurityContext{
 						RunAsUser:  func() *int64 { i := int64(1000); return &i }(),
 						RunAsGroup: func() *int64 { i := int64(1000); return &i }(),
@@ -135,6 +164,14 @@ func (controller *SessionController) CreateKubernetesPodHandler(w http.ResponseW
 					Name: "gitkatas-exercise-volume",
 					VolumeSource: corev1.VolumeSource{
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "backend-volume",
+					VolumeSource: corev1.VolumeSource{
+						HostPath: &corev1.HostPathVolumeSource{
+							Path: "/home/ubuntu/kataterm/backend",
+						},
 					},
 				},
 			},

@@ -1,0 +1,3 @@
+[submodule "gitkatas/git-katas"]
+	path = gitkatas/git-katas
+	url = https://github.com/daafonsecato/git-katas.git

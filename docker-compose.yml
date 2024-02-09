@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: daafonsecato/kataterm-postgres:v2
+    image: daafonsecato/kataterm-postgres:v3
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -18,7 +18,7 @@ services:
       - quizard_network
 
   frontend:
-    image: daafonsecato/kataterm-frontend:v2
+    image: daafonsecato/kataterm-frontend:v3
     build:
       context: ./frontend
       dockerfile: Dockerfile.develop
@@ -32,7 +32,7 @@ services:
       - quizard_network
 
   backend:
-    image: daafonsecato/kataterm-backend:v2
+    image: daafonsecato/kataterm-backend:v3
     build:
       context: ./backend
       dockerfile: Dockerfile.develop
@@ -50,7 +50,7 @@ services:
       - quizard_network
 
   reverseproxy:
-    image: daafonsecato/kataterm-reverseproxy:v2
+    image: daafonsecato/kataterm-reverseproxy:v3
     build:
       context: ./reverseproxy
       dockerfile: Dockerfile
@@ -68,7 +68,7 @@ services:
       - quizard_network
 
   gitkatas:
-    image: daafonsecato/kataterm-gitkatas:v2
+    image: daafonsecato/kataterm-gitkatas:v3
     build:
       context: ./gitkatas
       dockerfile: Dockerfile.gitkatas
@@ -85,7 +85,7 @@ services:
       - quizard_network
 
   validator:
-    image: daafonsecato/kataterm-validator:v2
+    image: daafonsecato/kataterm-validator:v3
     build:
       context: ./validator
       dockerfile: Dockerfile.validator

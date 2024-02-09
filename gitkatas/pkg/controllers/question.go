@@ -99,7 +99,7 @@ func (controller *QuestionController) StageBeforeActions(w http.ResponseWriter, 
 	cmd := exec.Command("/bin/bash", "-c", command_to_test)
 	output, err := cmd.Output()
 	if err != nil {
-		errorMsg := fmt.Sprintf("Error running task: %v", command_to_test)
+		errorMsg := fmt.Sprintf("Error running task: %v", err)
 		http.Error(w, errorMsg, http.StatusBadRequest)
 		return
 	}

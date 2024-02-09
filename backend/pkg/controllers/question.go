@@ -552,13 +552,19 @@ func (controller *QuestionController) StageBeforeActions(w http.ResponseWriter, 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	gitkatas_host := os.Getenv("GITKATAS_HOST")
-	epgitkatas := fmt.Sprintf("http://%s:8095/stage_before_actions", gitkatas_host)
+	// gitkatas_host := os.Getenv("GITKATAS_HOST")
+	epgitkatas := fmt.Sprintf("http://localhost:8095/stage_before_actions")
 	resp, err := http.Post(epgitkatas, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(string(respBody))
 	defer resp.Body.Close()
 	questionDetails := controller.currentCuestionDetails(question.TypeQuestion, question)
 
