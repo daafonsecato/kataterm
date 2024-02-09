@@ -39,7 +39,7 @@ spec:
               key: GITKATAS_HOST
       volumeMounts:
         - name: backend-volume
-          mountPath: /mnt/gitkatas
+          mountPath: /app
     - name: gitkatas
       image: daafonsecato/kataterm-gitkatas:v2
       securityContext:

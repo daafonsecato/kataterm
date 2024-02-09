@@ -10,11 +10,17 @@ spec:
   routes:
   - match: Host(`39b3321c-25da-41c9-b19a-dfdf80339a8d.backend.terminal.kataterm.com`) && PathPrefix(`/`)
     kind: Rule
+    middlewares:
+    - name: cors
+      namespace: default
     services:
     - name: backend-svc-39b3321c-25da-41c9-b19a-dfdf80339a8d
       port: 8000
   - match: Host(`39b3321c-25da-41c9-b19a-dfdf80339a8d.ttyd.terminal.kataterm.com`) && PathPrefix(`/`)
     kind: Rule
+    middlewares:
+    - name: cors
+      namespace: default
     services:
     - name: ttyd-svc-39b3321c-25da-41c9-b19a-dfdf80339a8d
       port: 7681

@@ -2,7 +2,7 @@ CREATE TABLE questions (
   ID VARCHAR(255) NOT NULL UNIQUE,
   Content_Text VARCHAR(4095) NOT NULL,
   Hint VARCHAR(255) NOT NULL,
-  Subtext VARCHAR(255) NOT NULL,
+  Subtext VARCHAR(4095) NOT NULL,
   Type_Question VARCHAR(255) NOT NULL,
   Staging_Message VARCHAR(255) NOT NULL,
   Options JSON,
