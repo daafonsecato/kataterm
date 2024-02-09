@@ -3,13 +3,11 @@ import TaskPanel from '../../Components/TaskPanel/TaskPanel';
 import TerminalPanel from '../../Components/TerminalPanel/TerminalPanel';
 import Split from 'react-split';
 import EditorPanel from '../../Components/EditorPanel/EditorPanel';
-import { HostnamesContext } from "../../Contexts/Hostnames";
 
 function QuestionView() {
-
-    const { hostnames } = useContext(HostnamesContext);
-    const ttydUrl = "http://" + hostnames.ttyd; // Replace with your ttyd URL
-    const codeServerUrl = "http://" + hostnames.codeServer; // Replace with your ttyd URL
+    const hostnameslocal = localStorage.getItem('hostnames');
+    const ttydUrl = "http://" + JSON.parse(hostnameslocal).ttyd; // Set ttydUrl using localStorage
+    const codeServerUrl = "http://" + JSON.parse(hostnameslocal).codeServer; // Set codeServerUrl using localStorage
 
     return (
         <div className="QuestionView">
@@ -22,7 +20,7 @@ function QuestionView() {
                     expandToMin={false} // Prevent panels from collapsing to minimum size
                     gutterSize={10} // Size of the gutter between panels
                     gutterAlign="center" // Align the gutter in the center
-                    snapOffset={30} // Snap to minimum                                                   size if within 30 pixels
+                    snapOffset={30} // Snap to minimum size if within 30 pixels
                 >
                     <div className="LeftPanel">
                         <TaskPanel />

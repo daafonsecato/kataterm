@@ -3,95 +3,93 @@ import { useNavigate } from 'react-router-dom';
 import { HostnamesContext } from "../../Contexts/Hostnames";
 
 const StartView = () => {
-
-    const { hostnames, setHostnames } = useContext(HostnamesContext)
+    const { hostnames, setHostnames } = useContext(HostnamesContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleStart = () => {
+    const handleStart = async () => {
         setIsLoading(true);
         if (!localStorage.getItem('sessionID')) {
-            createSession();
+            await createSession();
         } else {
-            setHostnamesWithExistingSession();
+            await setHostnamesWithExistingSession();
         }
     };
 
-    const createSession = () => {
-        fetch('http://terminal.kataterm.com:30009/create')
-            .then(response => response.json())
-            .then(data => {
-                const newUUID = data.newUUID;
-                const newHostnames = generateHostnames(newUUID);
-                localStorage.setItem('sessionID', newUUID);
-                setHostnames(newHostnames);
-                return newHostnames;
-            })
-            .then(newHostnames => {
-                performHealthChecks(newHostnames);
-            })
-            .catch(error => {
-                console.error(error);
+    const createSession = async () => {
+        try {
+            const response = await fetch('http://labmanager.terminal.kataterm.com:30713/create', {
+                method: 'GET'
             });
+            const data = await response.json();
+            const newUUID = data.newUUID;
+            const newHostnames = generateHostnames(newUUID);
+            localStorage.setItem('sessionID', newUUID);
+            setHostnames(newHostnames);
+            await performHealthChecks(newHostnames);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const setHostnamesWithExistingSession = () => {
+    const setHostnamesWithExistingSession = async () => {
         const sessionID = localStorage.getItem('sessionID');
         const newHostnames = generateHostnames(sessionID);
         setHostnames(newHostnames);
-        performHealthChecks(newHostnames);
+        await performHealthChecks(newHostnames);
     };
 
     const generateHostnames = (sessionID) => {
-        let hostnames = {
-            backend: `${sessionID}.backend.terminal.kataterm.com:30007`,
-            ttyd: `${sessionID}.ttyd.terminal.kataterm.com:30007`,
-            codeServer: `${sessionID}.codeeditor.terminal.kataterm.com:30007`,
-        }
-        console.log(hostnames);
-        return hostnames;
+        const newHostnames = {
+            backend: `${sessionID}.backend.terminal.kataterm.com:30713`,
+            ttyd: `${sessionID}.ttyd.terminal.kataterm.com:30713`,
+            codeServer: `${sessionID}.codeeditor.terminal.kataterm.com:30713`,
+        };
+        localStorage.setItem('hostnames', JSON.stringify(newHostnames));
+        return newHostnames;
     };
 
-    const performHealthChecks = (hostnames) => {
-        const healthChecks = Object.values(hostnames).map(hostname =>
-            fetch(`http://${hostname}${hostname === hostnames.backend ? '/trials' : '/'}`)
-                .then(response => {
-                    if (response.status === 200 || response.status === 404) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject(new Error(`Health check failed for ${hostname}`));
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    return Promise.reject(new Error(`Health check failed for ${hostname}`));
-                })
-        );
+    const performHealthChecks = async (hostnames) => {
+        if (Object.values(hostnames).some(hostname => !hostname)) {
+            console.error("One or more hostnames are missing.");
+            if (localStorage.getItem('sessionID')) {
+                setHostnamesWithExistingSession(); // Retry setting hostnames
+            }
+            return;
+        }
 
-        const checkHealth = () => {
-            Promise.all(healthChecks)
-                .then(() => {
-                    navigate('/quiz');
-                })
-                .catch(error => {
-                    console.error(error);
-                    setTimeout(checkHealth, 20000);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
-        };
+        const healthChecks = Object.values(hostnames).map(async (hostname) => {
+            try {
+                const response = await fetch(`http://${hostname}${hostname === hostnames.backend ? '/trials' : '/'}`);
+                if (response.status !== 200 && response.status !== 404) {
+                    throw new Error(`Health check failed for ${hostname}`);
+                }
+            } catch (error) {
+                console.error(error);
+                throw error; // Rethrowing error to be caught in Promise.all
+            }
+        });
 
-        checkHealth();
+        try {
+            await Promise.all(healthChecks);
+            navigate('/quiz');
+        } catch (error) {
+            console.error("Health check failed for one or more services.");
+            setTimeout(() => performHealthChecks(hostnames), 20000);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            performHealthChecks(hostnames);
-        }, 20000);
+        if (Object.keys(hostnames).length > 0) {
+            const interval = setInterval(() => {
+                performHealthChecks(hostnames);
+            }, 20000);
 
-        return () => clearInterval(interval);
-    }, []);
+            return () => clearInterval(interval);
+        }
+    }, [hostnames]);
 
     return (
         <div>

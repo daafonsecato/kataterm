@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type TerminationRequest struct {
@@ -60,6 +61,7 @@ func (controller *SessionController) deletePodAndServicesbySessionID(w http.Resp
 	beSvcName := fmt.Sprintf("backend-svc-%s", sessionID)
 	ttydSvcName := fmt.Sprintf("ttyd-svc-%s", sessionID)
 	codeSvcName := fmt.Sprintf("codeeditor-svc-%s", sessionID)
+
 	// Delete the backend service
 	err = controller.clientset.CoreV1().Services(controller.namespace).Delete(context.TODO(), beSvcName, metav1.DeleteOptions{})
 	if err != nil {
@@ -81,6 +83,21 @@ func (controller *SessionController) deletePodAndServicesbySessionID(w http.Resp
 	if err != nil {
 		log.Printf("Failed to delete code editor service: %v", err)
 		http.Error(w, fmt.Sprintf("Error deleting code editor service: %v", err), http.StatusInternalServerError)
+		return err
+	}
+
+	// Delete the IngressRoute
+	ingressRouteName := fmt.Sprintf("ingressroute-%s", sessionID)
+	// Define the GroupVersionResource (GVR)
+	gvr := schema.GroupVersionResource{
+		Group:    "traefik.containo.us",
+		Version:  "v1alpha1",
+		Resource: "ingressroutes",
+	}
+	err = controller.dynamiccclient.Resource(gvr).Namespace(controller.namespace).Delete(context.TODO(), ingressRouteName, metav1.DeleteOptions{})
+	if err != nil {
+		log.Printf("Failed to delete IngressRoute: %v", err)
+		http.Error(w, fmt.Sprintf("Error deleting IngressRoute: %v", err), http.StatusInternalServerError)
 		return err
 	}
 

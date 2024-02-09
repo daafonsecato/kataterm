@@ -3,14 +3,16 @@ package handlers
 import (
 	db "github.com/daafonsecato/kataterm-reverseproxy/internal/database"
 	"github.com/daafonsecato/kataterm-reverseproxy/pkg/models"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 type SessionController struct {
-	sessionStore *models.SessionStore
-	namespace    string
-	clientset    *kubernetes.Clientset
+	sessionStore   *models.SessionStore
+	namespace      string
+	clientset      *kubernetes.Clientset
+	dynamiccclient *dynamic.DynamicClient
 }
 
 func NewSessionController() *SessionController {
@@ -34,9 +36,16 @@ func NewSessionController() *SessionController {
 		panic("Error creating Kubernetes clientset")
 	}
 
+	// Create a dynamic client
+	dynamicClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	return &SessionController{
-		sessionStore: sessionStore,
-		namespace:    namespace,
-		clientset:    clientset,
+		sessionStore:   sessionStore,
+		namespace:      namespace,
+		clientset:      clientset,
+		dynamiccclient: dynamicClient,
 	}
 }

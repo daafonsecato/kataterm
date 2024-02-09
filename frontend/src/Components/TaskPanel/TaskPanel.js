@@ -1,6 +1,6 @@
 // TaskPanel.js
 import React, { useEffect, useState, useRef, useContext } from "react";
-import mockData from "../../Mocks/images-result.json";
+import { useNavigate } from 'react-router-dom';
 import "./TaskPanel.css";
 import { marked } from "marked";
 import TaskPanelHeader from "../TaskPanelHeader/TaskPanelHeader";
@@ -8,6 +8,7 @@ import ImagesOptions from "../ImagesOptions/ImagesOptions";
 import { HostnamesContext } from "../../Contexts/Hostnames";
 
 function TaskPanel() {
+  const navigate = useNavigate();
   const { hostnames } = useContext(HostnamesContext);
   const [taskDetails, setTaskDetails] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
@@ -16,20 +17,27 @@ function TaskPanel() {
   const taskPanelRef = useRef(null);
   const [trialsLeft, setTrialsLeft] = useState(0);
 
-  const backendUrl = hostnames.backend;
+  console.log("hostnames", localStorage.getItem('hostnames'));
+  const hostnameslocal = localStorage.getItem('hostnames');
+  const backendUrl = hostnameslocal ? JSON.parse(hostnameslocal).backend : '';
+  console.log("backendUrl", backendUrl);
 
   useEffect(() => {
     setTrialsLeft(taskDetails ? taskDetails.trials_left : 0);
   }, [taskDetails]);
 
   const fetchTaskDetails = async () => {
+    console.log("fetching task details with backend url:", backendUrl);
     try {
       const response = await fetch(
-        `http://${backendUrl}/question`
+        `http://${backendUrl}/question`,
+        {
+          method: "GET",
+        }
       );
       let data;
       data = await response.json();
-      console.log(data);
+      console.log("Fetched question data:", data);
       if (response.status === 200) {
         if (data.before_actions.length > 0) {
           setupQuestion(data);
@@ -43,6 +51,10 @@ function TaskPanel() {
       console.error("Error fetching question:", error);
     }
   };
+  useEffect(() => {
+    console.log("useEffect with backend url:", backendUrl);
+    fetchTaskDetails();
+  }, []);
 
   const skipQuestion = async (event) => {
     try {
@@ -87,14 +99,6 @@ function TaskPanel() {
     }
   }
 
-  const isMountedRef = useRef(false);
-
-  useEffect(() => {
-    if (!isMountedRef.current) {
-      fetchTaskDetails();
-      isMountedRef.current = true;
-    }
-  }, []);
 
   async function checkConfig(questionID) {
     try {
@@ -282,16 +286,36 @@ function TaskPanel() {
       }
     }
   };
-
+  const terminateSession = async () => {
+    try {
+      const sessionID = localStorage.getItem("sessionID");
+      const response = await fetch("http://labmanager.terminal.kataterm.com:30713/terminate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionID,
+        }),
+      });
+      console.log("Session terminated:", response);
+      localStorage.removeItem("sessionID");
+      navigate('/');
+    } catch (error) {
+      console.error("Error terminating session:", error);
+    }
+  };
   return (
     <div className="TaskPanel" ref={taskPanelRef} onClick={handlePanelClick}>
       <TaskPanelHeader resetQuestion={resetQuestion} />
-      {isLoading ? ( // Conditional rendering for loader
+      {isLoading ? (
         <div className="loader">Loading...</div>
       ) : (
         transformJsonToComponent(taskDetails)
       )}
-
+      <button className="terminate-button" onClick={terminateSession}>
+        Terminate
+      </button>
       <div className="task-panel-footer">
         <button className="skip-button">Skip</button>
       </div>
