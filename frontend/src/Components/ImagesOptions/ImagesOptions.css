@@ -6,8 +6,13 @@
 }
 
 .figure-option__image {
-    /* object-fit: contain; */
-    max-block-size: 128px;
+    aspect-ratio: 16/9;
+    width: 100%;
+    height: auto;
+    min-width: 300px;
+    max-width: 400px;
+    object-fit: contain;
+    object-position: bottom;
 }
 
 .figure-option__figcaption {
